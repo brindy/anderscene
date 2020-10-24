@@ -47,32 +47,39 @@ struct Cloud: View {
         var rng = config.scene.clouds[index]
         let horizontal = rng.nextCGFloat(0.1 ..< 0.9)
         let vertical = rng.nextCGFloat(0.3 ..< 0.6)
-        let x = (horizontal * g.size.width)
-        let y = (vertical * g.size.height)
+        var x = (horizontal * g.size.width)
+        var y = (vertical * g.size.height)
 
         Path { path in
 
             path.move(to: CGPoint(x: x, y: y))
 
+            // Start
             path.addCurve(to: CGPoint(x: x, y: y - 10),
                           control1: CGPoint(x: x, y: y),
                           control2: CGPoint(x: x - 5, y: y))
 
-            path.addCurve(to: CGPoint(x: x + 70, y: y - 20),
-                          control1: CGPoint(x: x + 20, y: y - 30),
-                          control2: CGPoint(x: x + 30, y: y - 60))
+            // Hump 1
+            x += 70
+            path.addCurve(to: CGPoint(x: x, y: y - 20),
+                          control1: CGPoint(x: x - 50, y: y - 30),
+                          control2: CGPoint(x: x - 40, y: y - 60))
 
-            path.addCurve(to: CGPoint(x: x + 100, y: y - 20),
-                          control1: CGPoint(x: x + 80, y: y - 10),
-                          control2: CGPoint(x: x + 100, y: y - 20))
+            // Hump 2
+            x += 30
+            path.addCurve(to: CGPoint(x: x, y: y - 20),
+                          control1: CGPoint(x: x - 20, y: y - 10),
+                          control2: CGPoint(x: x, y: y - 20))
 
-            path.addCurve(to: CGPoint(x: x + 160, y: y - 10),
-                          control1: CGPoint(x: x + 150, y: y - 40),
-                          control2: CGPoint(x: x + 150, y: y - 20))
+            x += 60
+            path.addCurve(to: CGPoint(x: x, y: y - 10),
+                          control1: CGPoint(x: x - 10, y: y - 40),
+                          control2: CGPoint(x: x - 10, y: y - 20))
 
-            path.addCurve(to: CGPoint(x: x + 150, y: y),
-                          control1: CGPoint(x: x + 170, y: y - 0),
-                          control2: CGPoint(x: x + 170, y: y - 0))
+            // End
+            path.addCurve(to: CGPoint(x: x - 10, y: y),
+                          control1: CGPoint(x: x + 10, y: y - 0),
+                          control2: CGPoint(x: x + 10, y: y - 0))
 
             path.closeSubpath()
 
@@ -125,7 +132,7 @@ struct Anderscene_Previews: PreviewProvider {
 
         let config = Config(
             palette: .default,
-            scene: Anderscene.generate(withSeed: 5))
+            scene: Anderscene.generate(withSeed: 10))
 
         AndersceneView()
             .previewDevice("iPhone SE (2nd generation)")

@@ -11,7 +11,7 @@ struct Anderscene {
         let sun = RNG(seed: rng.next())
 
         var clouds = [RNG]()
-        for _ in 0 ..< rng.nextInt(0 ..< 3) {
+        for _ in 0 ..< rng.nextInt(1 ..< 3) {
             clouds.append(RNG(seed: rng.next()))
         }
 
