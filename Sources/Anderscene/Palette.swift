@@ -6,9 +6,12 @@ public struct Palette {
     static let `default` = Palette(
         c1: Color(hex: "ffffff"),
         c2: Color(hex: "ecf0ff"),
-        c3: Color(hex: "d9e2ff"),
-        c4: Color(hex: "ecf0ff"),
-        c5: Color(hex: "ecf0ff")
+        c3: Color(hex: "dde5ff"),
+        c4: Color(hex: "d9e2ff"),
+        c5: Color(hex: "a2b8ff"),
+        c6: Color(hex: "cbf5ab"),
+        c7: Color(hex: "bded9a"),
+        c8: Color(hex: "aae67a")
     )
 
     let c1: Color
@@ -16,6 +19,9 @@ public struct Palette {
     let c3: Color
     let c4: Color
     let c5: Color
+    let c6: Color
+    let c7: Color
+    let c8: Color
 
 }
 
@@ -61,6 +67,12 @@ struct Palette_Previews: PreviewProvider {
                 .foregroundColor(Palette.default.c4)
             Rectangle()
                 .foregroundColor(Palette.default.c5)
+            Rectangle()
+                .foregroundColor(Palette.default.c6)
+            Rectangle()
+                .foregroundColor(Palette.default.c7)
+            Rectangle()
+                .foregroundColor(Palette.default.c8)
         }
 
     }

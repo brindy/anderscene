@@ -9,18 +9,17 @@ struct Anderscene {
         var rng = RNG(seed: seed)
 
         let sun = RNG(seed: rng.next())
-
-        var clouds = [RNG]()
-        for _ in 0 ..< rng.nextInt(1 ..< 3) {
-            clouds.append(RNG(seed: rng.next()))
-        }
+        let clouds = RNG(seed: rng.next())
+        let mountains = RNG(seed: rng.next())
 
         return Anderscene(
             sun: sun,
-            clouds: clouds)
+            clouds: clouds,
+            mountains: mountains)
     }
 
     let sun: RNG
-    let clouds: [RNG]
+    let clouds: RNG
+    let mountains: RNG
 
 }
