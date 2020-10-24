@@ -24,7 +24,7 @@ public struct Anderscene: View {
 
                 // Foreground Layer 1
 
-                // Foregorund Layer 2
+                // Foreground Layer 2
 
             }
         }.background(config.palette.c3)
@@ -48,9 +48,13 @@ struct Anderscene_Previews: PreviewProvider {
 
     static var previews: some View {
 
-        Anderscene().environmentObject(Config(
-                                        rng: RNG(seed: 5),
-                                        palette: .default))
+        let config = Config(rng: RNG(seed: 11),
+                            palette: .default)
+
+        Anderscene()
+            .previewDevice("iPhone SE (2nd generation)")
+            .edgesIgnoringSafeArea(.all)
+            .environmentObject(config)
 
     }
 
