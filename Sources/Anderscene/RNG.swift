@@ -19,9 +19,12 @@ struct RNG: RandomNumberGenerator {
          return next1 ^ (next2 << 32)
      }
 
-    func nextInt(_ range: Range<Int>) -> Int {
-        var rng = self
-        return Int.random(in: range, using: &rng)
+    mutating func nextInt(_ range: Range<Int>) -> Int {
+        return Int.random(in: range, using: &self)
+    }
+
+    mutating func nextCGFloat(_ range: Range<CGFloat>) -> CGFloat {
+        return CGFloat.random(in: range, using: &self)
     }
 
 }

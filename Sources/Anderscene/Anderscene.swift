@@ -1,61 +1,26 @@
 
 import SwiftUI
 
-public struct Anderscene: View {
+struct Anderscene {
 
-    @EnvironmentObject var config: Config
+    /// When adding new elements they must be added after the existing ones so that the
+    ///  rng remains consistent for a given seed.
+    static func generate(withSeed seed: UInt64) -> Anderscene {
+        var rng = RNG(seed: seed)
 
-    public var body: some View {
-        GeometryReader { g in
-            ZStack {
+        let sun = RNG(seed: rng.next())
 
-                // Sun
-                Sun(maxOffset: g.size.width)
+        var clouds = [RNG]()
+        for _ in 0 ..< rng.nextInt(0 ..< 3) {
+            clouds.append(RNG(seed: rng.next()))
+        }
 
-                // Clouds
-
-                // Haze
-
-                // 1 ..< 3 mountain layers
-
-                // Near Ground
-
-                // Water
-
-                // Foreground Layer 1
-
-                // Foreground Layer 2
-
-            }
-        }.background(config.palette.c3)
-    }
-    
-}
-
-class Config: ObservableObject {
-
-    @Published var rng: RNG
-    @Published var palette: Palette
-
-    init(rng: RNG, palette: Palette) {
-        self.rng = rng
-        self.palette = palette
+        return Anderscene(
+            sun: sun,
+            clouds: clouds)
     }
 
-}
-
-struct Anderscene_Previews: PreviewProvider {
-
-    static var previews: some View {
-
-        let config = Config(rng: RNG(seed: 11),
-                            palette: .default)
-
-        Anderscene()
-            .previewDevice("iPhone SE (2nd generation)")
-            .edgesIgnoringSafeArea(.all)
-            .environmentObject(config)
-
-    }
+    let sun: RNG
+    let clouds: [RNG]
 
 }
