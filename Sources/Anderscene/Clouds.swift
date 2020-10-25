@@ -46,9 +46,10 @@ struct Cloud: View {
 
         var rng = config.scene.clouds
         let horizontal = rng.nextCGFloat(0.1 ..< 0.9)
-        let vertical = rng.nextCGFloat(0.3 ..< 0.6)
+        let vertical = rng.nextCGFloat(0.1 ..< 0.4)
         var x = (horizontal * g.size.width)
         let y = (vertical * g.size.height)
+        let minScale: CGFloat = 0.5
 
         Path { path in
 
@@ -81,7 +82,7 @@ struct Cloud: View {
             path.closeSubpath()
 
         }
-        .scale(rng.nextCGFloat(0.5 ..< 1.0))
+        .scale(rng.nextCGFloat(minScale ..< 1.0))
         .foregroundColor(config.palette.c2.opacity(0.5))
 
     }

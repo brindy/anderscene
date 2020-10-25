@@ -11,7 +11,8 @@ public struct Palette {
         c5: Color(hex: "a2b8ff"),
         c6: Color(hex: "cbf5ab"),
         c7: Color(hex: "bded9a"),
-        c8: Color(hex: "aae67a")
+        c8: Color(hex: "aae67a"),
+        c9: Color(hex: "9bd96f")
     )
 
     let c1: Color
@@ -22,6 +23,7 @@ public struct Palette {
     let c6: Color
     let c7: Color
     let c8: Color
+    let c9: Color
 
 }
 
@@ -73,6 +75,8 @@ struct Palette_Previews: PreviewProvider {
                 .foregroundColor(Palette.default.c7)
             Rectangle()
                 .foregroundColor(Palette.default.c8)
+            Rectangle()
+                .foregroundColor(Palette.default.c9)
         }
 
     }

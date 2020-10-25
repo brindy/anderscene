@@ -1,7 +1,7 @@
 
 import SwiftUI
 
-struct Sun: View {
+struct SkyBall: View {
 
     @EnvironmentObject var config: Config
 
@@ -12,7 +12,7 @@ struct Sun: View {
         var rng = config.scene.sun
         let size = rng.nextCGFloat(50 ..< 100)
         let horizontal = rng.nextCGFloat(0.1 ..< 0.9)
-        let vertical = rng.nextCGFloat(0.3 ..< 0.6)
+        let vertical = rng.nextCGFloat(0.2 ..< 0.4)
         let x = (horizontal * g.size.width)
         let y = (vertical * g.size.height)
 
