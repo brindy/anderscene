@@ -8,18 +8,21 @@ struct Anderscene {
     static func generate(withSeed seed: UInt64) -> Anderscene {
         var rng = RNG(seed: seed)
 
-        let sun = RNG(seed: rng.next())
-        let clouds = RNG(seed: rng.next())
-        let mountains = RNG(seed: rng.next())
-
         return Anderscene(
-            sun: sun,
-            clouds: clouds,
-            mountains: mountains)
+            skyBall: RNG(seed: rng.next()),
+            clouds: RNG(seed: rng.next()),
+            haze: RNG(seed: rng.next()),
+            peaks: RNG(seed: rng.next()),
+            hills: RNG(seed: rng.next()),
+            shore: RNG(seed: rng.next())
+        )
     }
 
-    let sun: RNG
+    let skyBall: RNG
     let clouds: RNG
-    let mountains: RNG
+    let haze: RNG
+    let peaks: RNG
+    let hills: RNG
+    let shore: RNG
 
 }
