@@ -1,53 +1,17 @@
 
 import SwiftUI
 
-struct RelativePathRenderer: View {
-
-    @EnvironmentObject var config: Config
-
-    let g: GeometryProxy
-    let path: [Anderscene.RelativePath]
-
-    var body: some View {
-        Path { path in
-            for progress in self.path {
-
-                switch progress {
-                case .moveTo(let p):
-                    path.move(to: p • g.size)
-
-                case .addCurve(let p, let cp1, let cp2):
-                    path.addCurve(to: p • g.size,
-                                  control1: cp1 • g.size,
-                                  control2: cp2 • g.size)
-
-                case .addLine(let p):
-                    path.addLine(to: p • g.size)
-
-                }
-
-            }
-        }
-    }
-
-}
-
 struct SkyBall: View {
 
     @EnvironmentObject var config: Config
 
-    let g: GeometryProxy
+    let size: CGSize
 
     var body: some View {
 
-        var rng = config.scene.skyBall
-        let minSize = g.size.width / 10
-        let maxSize = g.size.width / 5
-        let size = rng.nextCGFloat(minSize ..< maxSize)
-        let horizontal = rng.nextCGFloat(0.1 ..< 0.9)
-        let vertical = rng.nextCGFloat(0.1 ..< 0.3)
-        let x = (horizontal * g.size.width)
-        let y = (vertical * g.size.height)
+        let spec = config.scene.skyBall
+        let size = self.size.width * spec.size
+        let position = spec.point • self.size
 
         ZStack {
             Circle()
@@ -62,7 +26,7 @@ struct SkyBall: View {
                        height: size * 0.8,
                        alignment: .center)
 
-        }.position(x: x, y: y)
+        }.position(x: position.x, y: position.y)
 
     }
 
@@ -215,21 +179,19 @@ struct Clouds: View {
 
     @EnvironmentObject var config: Config
 
-    let g: GeometryProxy
+    let size: CGSize
 
     var body: some View {
-
         ZStack {
 
             ForEach(config.scene.clouds) { cloudSpec in
 
-                RelativePathRenderer(g: g, path: cloudSpec.path)
+                RelativePathRenderer(size: size, path: cloudSpec.path)
                     .foregroundColor(config.palette.c2.opacity(0.5))
 
             }
 
         }
-
     }
 
 }
@@ -277,16 +239,16 @@ public struct AndersceneView: View {
         GeometryReader { g in
             ZStack {
 
-                SkyBall(g: g)
+                SkyBall(size: g.size)
 
-                Clouds(g: g)
+                Clouds(size: g.size)
 
 //                Haze(g: g)
-
+//
 //                Peaks(g: g)
-
+//
 //                Hills(g: g)
-
+//
 //                Shore(g: g)
 
                 // Water

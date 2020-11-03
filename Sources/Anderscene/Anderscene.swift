@@ -5,35 +5,21 @@ import SwiftUI
 infix operator • : MultiplicationPrecedence
 struct Anderscene {
 
-    struct RelativePoint {
+    struct SkyBallSpec {
 
-        let x: CGFloat
-        let y: CGFloat
+        let point: RelativePoint
 
-        static func • (left: RelativePoint, right: CGSize) -> CGPoint {
-            return CGPoint(x: right.width * left.x, y: right.height * left.y)
-        }
+        /// Relative to width
+        let size: CGFloat
 
     }
 
-    enum RelativePath {
-
-        case moveTo(point: RelativePoint)
-
-        case addCurve(point: RelativePoint,
-                      cp1: RelativePoint,
-                      cp2: RelativePoint)
-
-        case addLine(point: RelativePoint)
-
-    }
-
-    struct PathSpec: Identifiable {
-
-        let id = UUID.init().uuidString
-
-        let path: [RelativePath]
-
+    static func generateSkyBall(withSeed seed: UInt64) -> SkyBallSpec {
+        var rng = RNG(seed: seed)
+        let point = RelativePoint(x: rng.nextCGFloat(0.1 ..< 0.9),
+                                  y: rng.nextCGFloat(0.1 ..< 0.3))
+        let size = rng.nextCGFloat(0.1 ..< 0.2)
+        return SkyBallSpec(point: point, size: size)
     }
 
     /// When adding new elements they must be added after the existing ones so that the
@@ -41,7 +27,7 @@ struct Anderscene {
     static func generate(withSeed seed: UInt64) -> Anderscene {
         var rng = RNG(seed: seed)
 
-        let skyBall = RNG(seed: rng.next())
+        let skyBall = generateSkyBall(withSeed: rng.next())
         let clouds = generateClouds(withSeed: rng.next())
         let haze = RNG(seed: rng.next())
         let peaks = RNG(seed: rng.next())
@@ -91,7 +77,7 @@ struct Anderscene {
         }
 
 
-        var path = [Anderscene.RelativePath]()
+        var path = [RelativePath]()
         path.append(.moveTo(point: .init(x: x, y: y)))
 
         // Start under-tuck
@@ -127,7 +113,7 @@ struct Anderscene {
                               cp1: .init(x: x +% mod, y: y),
                               cp2: .init(x: x -% mod, y: y)))
 
-        return Anderscene.PathSpec(path: path)
+        return PathSpec(path: path)
     }
 
     static func generateClouds(withSeed seed: UInt64) -> [PathSpec] {
@@ -137,7 +123,7 @@ struct Anderscene {
         }
     }
 
-    let skyBall: RNG
+    let skyBall: SkyBallSpec
     let clouds: [PathSpec]
     let haze: RNG
     let peaks: RNG
