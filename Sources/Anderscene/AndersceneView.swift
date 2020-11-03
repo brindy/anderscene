@@ -1,6 +1,37 @@
 
 import SwiftUI
 
+struct RelativePathRenderer: View {
+
+    @EnvironmentObject var config: Config
+
+    let g: GeometryProxy
+    let path: [Anderscene.RelativePath]
+
+    var body: some View {
+        Path { path in
+            for progress in self.path {
+
+                switch progress {
+                case .moveTo(let p):
+                    path.move(to: p • g.size)
+
+                case .addCurve(let p, let cp1, let cp2):
+                    path.addCurve(to: p • g.size,
+                                  control1: cp1 • g.size,
+                                  control2: cp2 • g.size)
+
+                case .addLine(let p):
+                    path.addLine(to: p • g.size)
+
+                }
+
+            }
+        }
+    }
+
+}
+
 struct SkyBall: View {
 
     @EnvironmentObject var config: Config
@@ -32,97 +63,6 @@ struct SkyBall: View {
                        alignment: .center)
 
         }.position(x: x, y: y)
-
-    }
-
-}
-
-
-struct Clouds: View {
-
-    @EnvironmentObject var config: Config
-
-    let g: GeometryProxy
-
-    var body: some View {
-
-        var rng = config.scene.clouds
-
-        ZStack {
-            ForEach(0 ..< rng.nextInt(1 ..< 3), id: \.self) { _ in
-               Cloud(g: g)
-            }
-        }
-
-    }
-
-}
-
-struct Cloud: View {
-
-    @EnvironmentObject var config: Config
-
-    let g: GeometryProxy
-
-    private func addHump(_ path: inout Path, rng: inout RNG, x: CGFloat, y: CGFloat) -> CGFloat {
-
-        let maxDistance = g.size.width / 3.75
-        let minDistance = g.size.width / 10
-        let height = g.size.width / 15
-
-        let distance: CGFloat = rng.nextCGFloat(minDistance ..< maxDistance)
-        path.addCurve(to: CGPoint(x: x + distance, y: y - height / 2),
-                      control1: CGPoint(x: x + distance / 2, y: y - height),
-                      control2: CGPoint(x: x + distance / 2, y: y - height))
-        return distance
-    }
-
-    private func addSpacer(_ path: inout Path, rng: inout RNG, x: CGFloat, y: CGFloat) -> CGFloat {
-
-        let maxDistance = g.size.width / 6.25
-        let minDistance = g.size.width / 12.5
-        let height = g.size.width / 30
-
-        let distance: CGFloat = rng.nextCGFloat(minDistance ..< maxDistance)
-        path.addCurve(to: CGPoint(x: x + distance, y: y - height),
-                      control1: CGPoint(x: x + distance / 2, y: y - height / 2),
-                      control2: CGPoint(x: x + distance, y: y - height))
-        return distance
-    }
-
-    var body: some View {
-
-        var rng = config.scene.clouds
-        let horizontal = rng.nextCGFloat(0.1 ..< 0.9)
-        let vertical = rng.nextCGFloat(0.1 ..< 0.4)
-        var x = (horizontal * g.size.width)
-        let y = (vertical * g.size.height)
-
-        Path { path in
-
-            path.move(to: CGPoint(x: x, y: y))
-
-            // Start
-            path.addCurve(to: CGPoint(x: x, y: y - 10),
-                          control1: CGPoint(x: x, y: y),
-                          control2: CGPoint(x: x - 10, y: y))
-
-            x += addHump(&path, rng: &rng, x: x, y: y)
-
-            for _ in 0 ..< rng.nextInt(1 ..< 3) {
-                x += addSpacer(&path, rng: &rng, x: x, y: y)
-                x += addHump(&path, rng: &rng, x: x, y: y)
-            }
-
-            // End
-            path.addCurve(to: CGPoint(x: x - 10, y: y),
-                          control1: CGPoint(x: x + 10, y: y),
-                          control2: CGPoint(x: x - 10, y: y))
-
-            path.closeSubpath()
-
-        }
-        .foregroundColor(config.palette.c2.opacity(0.5))
 
     }
 
@@ -196,7 +136,7 @@ struct Hill: View {
     let verticalPosition: CGFloat
 
     var body: some View {
-        var rng = config.scene.clouds
+        var rng = config.scene.hills
         let maxHumpSize = g.size.width / 4
         var x: CGFloat = rng.nextCGFloat(-100 ..< 0)
         var y = verticalPosition * g.size.height
@@ -271,6 +211,29 @@ struct Haze: View {
 
 }
 
+struct Clouds: View {
+
+    @EnvironmentObject var config: Config
+
+    let g: GeometryProxy
+
+    var body: some View {
+
+        ZStack {
+
+            ForEach(config.scene.clouds) { cloudSpec in
+
+                RelativePathRenderer(g: g, path: cloudSpec.path)
+                    .foregroundColor(config.palette.c2.opacity(0.5))
+
+            }
+
+        }
+
+    }
+
+}
+
 struct Shore: View {
 
     @EnvironmentObject var config: Config
@@ -318,13 +281,13 @@ public struct AndersceneView: View {
 
                 Clouds(g: g)
 
-                Haze(g: g)
+//                Haze(g: g)
 
-                Peaks(g: g)
+//                Peaks(g: g)
 
-                Hills(g: g)
+//                Hills(g: g)
 
-                Shore(g: g)
+//                Shore(g: g)
 
                 // Water
 
@@ -340,7 +303,7 @@ public struct AndersceneView: View {
     
 }
 
-struct Anderscene_Previews: PreviewProvider {
+struct AndersceneView_Previews: PreviewProvider {
 
     static var previews: some View {
 
