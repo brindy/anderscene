@@ -36,34 +36,11 @@ struct Peaks: View {
 
     @EnvironmentObject var config: Config
 
-    let g: GeometryProxy
+    let size: CGSize
 
     var body: some View {
-        var rng = config.scene.peaks
-        let y = g.size.height * 0.5
-        let maxDistance = g.size.width / 5
-        let maxHeight = g.size.width / 10
-
-        Path { path in
-            var x: CGFloat = rng.nextCGFloat(-100 ..< 0)
-            path.move(to: CGPoint(x: x, y: y))
-
-            while x < g.size.width {
-                let heightMod = rng.nextCGFloat(-maxHeight ..< maxHeight)
-                path.addLine(to: CGPoint(x: x + (maxDistance / 2), y: y - heightMod))
-                path.addLine(to: CGPoint(x: x + maxDistance, y: y))
-                x += maxDistance
-            }
-
-            path.addLine(to: CGPoint(x: g.size.width, y: y))
-
-            path.addLine(to: CGPoint(x: g.size.width, y: g.size.height))
-            path.addLine(to: CGPoint(x: 0, y: g.size.height))
-
-            path.closeSubpath()
-
-        }
-        .foregroundColor(config.palette.c6)
+        RelativePathRenderer(size: size, path: config.scene.peaks.path)
+            .foregroundColor(config.palette.c6)
     }
 
 }
@@ -144,10 +121,10 @@ struct Haze: View {
 
     @EnvironmentObject var config: Config
 
-    var g: GeometryProxy
+    let size: CGSize
 
     var body: some View {
-        RelativePathRenderer(size: g.size, path: config.scene.haze.path)
+        RelativePathRenderer(size: size, path: config.scene.haze.path)
             .foregroundColor(config.palette.c2)
     }
 
@@ -221,9 +198,9 @@ public struct AndersceneView: View {
 
                 Clouds(size: g.size)
 
-                Haze(g: g)
+                Haze(size: g.size)
 
-                Peaks(g: g)
+                Peaks(size: g.size)
 
                 Hills(g: g)
 
@@ -249,7 +226,7 @@ struct AndersceneView_Previews: PreviewProvider {
 
         let config = Config(
             palette: .default,
-            scene: Anderscene.generate(withSeed: 1))
+            scene: Anderscene.generate(withSeed: 12345))
 
         AndersceneView()
             .previewDevice("iPhone SE (2nd generation)")
