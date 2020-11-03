@@ -147,30 +147,8 @@ struct Haze: View {
     var g: GeometryProxy
 
     var body: some View {
-
-        var rng = config.scene.haze
-        let y = g.size.height * 0.4
-        let maxDistance = g.size.width / 5
-
-        Path { path in
-            var x: CGFloat = 0
-            path.move(to: CGPoint(x: x, y: y))
-
-            while x < g.size.width {
-                x += maxDistance
-                let heightMod = rng.nextCGFloat(-20 ..< 20)
-                path.addLine(to: CGPoint(x: x, y: y + heightMod))
-            }
-
-             path.addLine(to: CGPoint(x: g.size.width, y: y))
-
-            path.addLine(to: CGPoint(x: g.size.width, y: g.size.height))
-            path.addLine(to: CGPoint(x: 0, y: g.size.height))
-
-            path.closeSubpath()
-
-        }.foregroundColor(config.palette.c2)
-
+        RelativePathRenderer(size: g.size, path: config.scene.haze.path)
+            .foregroundColor(config.palette.c2)
     }
 
 }
@@ -243,13 +221,13 @@ public struct AndersceneView: View {
 
                 Clouds(size: g.size)
 
-//                Haze(g: g)
-//
-//                Peaks(g: g)
-//
-//                Hills(g: g)
-//
-//                Shore(g: g)
+                Haze(g: g)
+
+                Peaks(g: g)
+
+                Hills(g: g)
+
+                Shore(g: g)
 
                 // Water
 

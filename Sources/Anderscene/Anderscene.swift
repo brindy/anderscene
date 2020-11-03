@@ -22,6 +22,29 @@ struct Anderscene {
         return SkyBallSpec(point: point, size: size)
     }
 
+    static func generateHaze(withSeed seed: UInt64) -> PathSpec {
+        let heightRange = CGFloat(-0.02) ..< CGFloat(0.02)
+
+        var rng = RNG(seed: seed)
+        var path = [RelativePath]()
+        var x: CGFloat = 0
+        let y = 0.4 + rng.nextCGFloat(heightRange)
+
+        path.append(.moveTo(point: .init(x: x, y: y)))
+        repeat {
+            let distance = rng.nextCGFloat(0.15 ..< 0.25)
+            let height = rng.nextCGFloat(heightRange)
+            path.append(.addLine(point: .init(x: x, y: y + height)))
+            x += distance
+        } while x < 1
+
+        path.append(.addLine(point: .init(x: 1.0, y: y + rng.nextCGFloat(heightRange))))
+        path.append(.addLine(point: .init(x: 1.0, y: 1.0)))
+        path.append(.addLine(point: .init(x: 0.0, y: 1.0)))
+
+        return PathSpec(path: path)
+    }
+
     /// When adding new elements they must be added after the existing ones so that the
     ///  rng remains consistent for a given seed.
     static func generate(withSeed seed: UInt64) -> Anderscene {
@@ -29,7 +52,7 @@ struct Anderscene {
 
         let skyBall = generateSkyBall(withSeed: rng.next())
         let clouds = generateClouds(withSeed: rng.next())
-        let haze = RNG(seed: rng.next())
+        let haze = generateHaze(withSeed: rng.next())
         let peaks = RNG(seed: rng.next())
         let hills = RNG(seed: rng.next())
         let shore = RNG(seed: rng.next())
@@ -125,7 +148,7 @@ struct Anderscene {
 
     let skyBall: SkyBallSpec
     let clouds: [PathSpec]
-    let haze: RNG
+    let haze: PathSpec
     let peaks: RNG
     let hills: RNG
     let shore: RNG
