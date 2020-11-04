@@ -87,10 +87,11 @@ struct Hills: View {
         ]
 
         let treeColors = [
-            config.palette.c6,
             config.palette.c8,
-            config.palette.c9,
+            config.palette.c7,
             config.palette.c10,
+            config.palette.c9,
+            config.palette.c11
         ]
 
         ZStack {
@@ -155,8 +156,28 @@ struct Shore: View {
     let size: CGSize
 
     var body: some View {
-        RelativePathRenderer(size: size, path: config.scene.shore.path)
-            .foregroundColor(config.palette.c9)
+
+        let spec = config.scene.shore
+        let treeColors = [
+            config.palette.c10,
+            config.palette.c10,
+            config.palette.c11,
+            config.palette.c11
+        ]
+
+        ZStack {
+
+            RelativePathRenderer(size: size, path: spec.pathSpec.path)
+                .foregroundColor(config.palette.c9)
+
+            ForEach(0 ..< spec.trees.count, id: \.self) { treeIndex in
+                let tree = spec.trees[treeIndex]
+                Tree(size: size, spec: tree)
+                    .foregroundColor(treeColors[tree.shade])
+            }
+
+        }
+
     }
 }
 
@@ -200,7 +221,7 @@ struct AndersceneView_Previews: PreviewProvider {
 
         let config = Config(
             palette: .default,
-            scene: Anderscene.generate(withSeed: 11111111111111111))
+            scene: Anderscene.generate(withSeed: 1))
 
         AndersceneView()
             .previewDevice("iPhone SE (2nd generation)")

@@ -14,8 +14,9 @@ public struct Palette {
         c7: Color(hex: "bded9a"),
         c8: Color(hex: "aae67a"),
         c9: Color(hex: "9bd96f"),
+        c10: Color(hex: "6fbf5c"),
 
-        c10: Color(hex: "7f8c76")
+        c11: Color(hex: "7f8c76")
     )
 
     // Sky
@@ -30,10 +31,10 @@ public struct Palette {
     let c7: Color
     let c8: Color
     let c9: Color
-
-    // Some trees, shadows
     let c10: Color
 
+    // Some trees, shadows
+    let c11: Color
 }
 
 // https://stackoverflow.com/a/56874327/73479
@@ -93,11 +94,13 @@ struct Palette_Previews: PreviewProvider {
                     .foregroundColor(Palette.default.c8)
                 Rectangle()
                     .foregroundColor(Palette.default.c9)
+                Rectangle()
+                    .foregroundColor(Palette.default.c10)
             }
             Group {
                 Text("Trees & Rocks")
                 Rectangle()
-                    .foregroundColor(Palette.default.c10)
+                    .foregroundColor(Palette.default.c11)
             }
         }
 

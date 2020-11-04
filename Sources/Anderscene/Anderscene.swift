@@ -6,26 +6,24 @@ infix operator • : MultiplicationPrecedence
 struct Anderscene {
 
     struct SkyBallSpec {
-
         let point: RelativePoint
-
-        /// Relative to width
         let size: CGFloat
-
     }
 
     struct TreeSpec {
-
         let point: RelativePoint
         let height: CGFloat
         let shade: Int
-
     }
 
     struct HillSpec {
+        let pathSpec: PathSpec
+        let trees: [TreeSpec]
+    }
+
+    struct ShoreSpec {
 
         let pathSpec: PathSpec
-
         let trees: [TreeSpec]
 
     }
@@ -91,7 +89,7 @@ struct Anderscene {
         return PathSpec(path: path)
     }
 
-    static func generateTrees(withSeed seed: UInt64, betweenX xRange: Range<CGFloat>, atY y: CGFloat) -> [TreeSpec] {
+    static func generateTrees(withSeed seed: UInt64, betweenX xRange: Range<CGFloat>, atY y: CGFloat, maxHeight: CGFloat) -> [TreeSpec] {
 
         var rng = RNG(seed: seed)
         var trees = [TreeSpec]()
@@ -101,8 +99,8 @@ struct Anderscene {
         while x < xRange.upperBound {
             x += rng.nextCGFloat(0.0 ..< diffX)
             trees.append(TreeSpec(point: RelativePoint(x: x, y: y),
-                                  height: 0.05, // rng.nextCGFloat(0.01 ..< 0.05),
-                                  shade: rng.nextInt(0 ..< 3)))
+                                  height: rng.nextCGFloat(0.02 ..< maxHeight),
+                                  shade: rng.nextInt(0 ..< 4)))
         }
 
         return trees
@@ -125,7 +123,8 @@ struct Anderscene {
 
             trees += generateTrees(withSeed: rng.next(),
                                    betweenX: x ..< x + lastHumpDistance,
-                                   atY: y - lastHumpHeight / 3)
+                                   atY: y - lastHumpHeight / 3,
+                                   maxHeight: verticalOffset / 15)
 
             x += lastHumpDistance
         }
@@ -262,8 +261,13 @@ struct Anderscene {
         return generateHorizontal(withSeed: seed, verticalOffset: 0.4, heightRange: -0.02 ..< 0.02)
     }
 
-    static func generateShore(withSeed seed: UInt64) -> PathSpec {
-        return generateHorizontal(withSeed: seed, verticalOffset: 0.75, heightRange: -0.01 ..< 0.01)
+    static func generateShore(withSeed seed: UInt64) -> ShoreSpec {
+        var rng = RNG(seed: seed)
+        let horizontal = generateHorizontal(withSeed: rng.next(), verticalOffset: 0.75, heightRange: -0.01 ..< 0.01)
+
+        let trees = generateTrees(withSeed: rng.next(), betweenX: -0.1 ..< 1.1, atY: 0.76, maxHeight: 0.08)
+
+        return ShoreSpec(pathSpec: horizontal, trees: trees)
     }
 
     /// When adding new elements they must be added after the existing ones so that the
@@ -293,7 +297,7 @@ struct Anderscene {
     let haze: PathSpec
     let peaks: PathSpec
     let hills: [HillSpec]
-    let shore: PathSpec
+    let shore: ShoreSpec
 
 }
 
