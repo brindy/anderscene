@@ -49,7 +49,7 @@ struct Hills: View {
 
     @EnvironmentObject var config: Config
 
-    let g: GeometryProxy
+    let size: CGSize
 
     var body: some View {
         let colors = [
@@ -58,60 +58,14 @@ struct Hills: View {
         ]
 
         ZStack {
-            ForEach(0 ..< 2, id: \.self) { index in
+            ForEach(0 ..< config.scene.hills.count, id: \.self) { index in
 
-                Hill(g: g, verticalPosition: 0.6 + CGFloat(index) / CGFloat(10))
+                let path = config.scene.hills[index].path
+
+                RelativePathRenderer(size: size, path: path)
                     .foregroundColor(colors[index])
 
             }
-        }
-    }
-
-}
-
-struct Hill: View {
-
-    @EnvironmentObject var config: Config
-
-    let g: GeometryProxy
-    let verticalPosition: CGFloat
-
-    var body: some View {
-        var rng = config.scene.hills
-        let maxHumpSize = g.size.width / 4
-        var x: CGFloat = rng.nextCGFloat(-100 ..< 0)
-        var y = verticalPosition * g.size.height
-        let maxY = g.size.width / 20
-
-        Path { path in
-
-            func addHump() {
-
-                let distance: CGFloat = maxHumpSize
-                let height: CGFloat = g.size.width / 30
-                path.addCurve(to: CGPoint(x: x + distance, y: y - height),
-                              control1: CGPoint(x: x + distance / 2, y: y - height * 2),
-                              control2: CGPoint(x: x + distance / 2, y: y - height * 2))
-
-                x += distance
-            }
-
-            path.move(to: CGPoint(x: x, y: y))
-
-            addHump()
-
-            while x < g.size.width {
-                let height = rng.nextCGFloat(-maxY ..< maxY)
-                y += height
-                addHump()
-                y -= height
-            }
-
-            path.addLine(to: CGPoint(x: g.size.width, y: y))
-            path.addLine(to: CGPoint(x: g.size.width, y: g.size.height))
-            path.addLine(to: CGPoint(x: 0, y: g.size.height))
-
-            path.closeSubpath()
         }
     }
 
@@ -155,35 +109,12 @@ struct Shore: View {
 
     @EnvironmentObject var config: Config
 
-    var g: GeometryProxy
+    let size: CGSize
 
     var body: some View {
-
-        var rng = config.scene.shore
-        let y = g.size.height * 0.75
-        let maxDistance = g.size.width / 5
-
-        Path { path in
-            var x: CGFloat = 0
-            path.move(to: CGPoint(x: x, y: y))
-
-            while x < g.size.width {
-                x += maxDistance
-                let heightMod = rng.nextCGFloat(-20 ..< 20)
-                path.addLine(to: CGPoint(x: x, y: y + heightMod))
-            }
-
-             path.addLine(to: CGPoint(x: g.size.width, y: y))
-
-            path.addLine(to: CGPoint(x: g.size.width, y: g.size.height))
-            path.addLine(to: CGPoint(x: 0, y: g.size.height))
-
-            path.closeSubpath()
-
-        }.foregroundColor(config.palette.c9)
-
+        RelativePathRenderer(size: size, path: config.scene.shore.path)
+            .foregroundColor(config.palette.c9)
     }
-
 }
 
 public struct AndersceneView: View {
@@ -202,9 +133,9 @@ public struct AndersceneView: View {
 
                 Peaks(size: g.size)
 
-                Hills(g: g)
+                Hills(size: g.size)
 
-                Shore(g: g)
+                Shore(size: g.size)
 
                 // Water
 
@@ -226,17 +157,17 @@ struct AndersceneView_Previews: PreviewProvider {
 
         let config = Config(
             palette: .default,
-            scene: Anderscene.generate(withSeed: 12345))
+            scene: Anderscene.generate(withSeed: 22222222))
 
         AndersceneView()
             .previewDevice("iPhone SE (2nd generation)")
             .edgesIgnoringSafeArea(.all)
             .environmentObject(config)
 
-        AndersceneView()
-            .previewDevice("iPad Pro (12.9-inch) (4th generation)")
-            .edgesIgnoringSafeArea(.all)
-            .environmentObject(config)
+//        AndersceneView()
+//            .previewDevice("iPad Pro (12.9-inch) (4th generation)")
+//            .edgesIgnoringSafeArea(.all)
+//            .environmentObject(config)
 
     }
 

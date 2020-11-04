@@ -22,13 +22,12 @@ struct Anderscene {
         return SkyBallSpec(point: point, size: size)
     }
 
-    static func generateHaze(withSeed seed: UInt64) -> PathSpec {
-        let heightRange = CGFloat(-0.02) ..< CGFloat(0.02)
+    static func generateHorizontal(withSeed seed: UInt64, verticalOffset: CGFloat, heightRange: Range<CGFloat> = CGFloat(-0.02) ..< CGFloat(0.02)) -> PathSpec {
 
         var rng = RNG(seed: seed)
         var path = [RelativePath]()
         var x: CGFloat = 0
-        let y = 0.4 + rng.nextCGFloat(heightRange)
+        let y = verticalOffset + rng.nextCGFloat(heightRange)
 
         path.append(.moveTo(point: .init(x: x, y: y)))
         repeat {
@@ -69,37 +68,81 @@ struct Anderscene {
         return PathSpec(path: path)
     }
 
-    /// When adding new elements they must be added after the existing ones so that the
-    ///  rng remains consistent for a given seed.
-    static func generate(withSeed seed: UInt64) -> Anderscene {
+    static func generateHill(withSeed seed: UInt64, verticalOffset: CGFloat) -> PathSpec {
         var rng = RNG(seed: seed)
+        var path = [RelativePath]()
+        var x = rng.nextCGFloat(-0.5 ..< 0.0)
+        var y = verticalOffset
+        var lastHumpHeight: CGFloat = 0.0
+        var lastHumpDistance: CGFloat = 0.0
 
-        let skyBall = generateSkyBall(withSeed: rng.next())
-        let clouds = generateClouds(withSeed: rng.next())
-        let haze = generateHaze(withSeed: rng.next())
-        let peaks = generatePeaks(withSeed: rng.next())
-        let hills = RNG(seed: rng.next())
-        let shore = RNG(seed: rng.next())
+        func addHump() {
 
-        return Anderscene(
-            skyBall: skyBall,
-            clouds: clouds,
-            haze: haze,
-            peaks: peaks,
-            hills: hills,
-            shore: shore
-        )
+            path.append(.addCurve(point: .init(x: x + lastHumpDistance, y: y - lastHumpHeight / 2),
+                                  cp1: .init(x: x + lastHumpDistance / 2, y: y - lastHumpHeight),
+                                  cp2: .init(x: x + lastHumpDistance / 2, y: y - lastHumpHeight)))
+
+            x += lastHumpDistance
+        }
+
+        func addSpacer() {
+            let height: CGFloat = lastHumpHeight / 2
+            let distance = lastHumpDistance / 3
+            path.append(.addCurve(point: .init(x: x + distance, y: y - height),
+                                  cp1: .init(x: x + distance / 2, y: y - height / 2),
+                                  cp2: .init(x: x + distance, y: y - height)))
+
+            x += distance
+        }
+
+        func randomize() {
+            let yMod = rng.nextCGFloat(0 ..< 0.02)
+
+            if x < 0.5 {
+                y -= yMod
+            } else {
+                y += yMod
+            }
+
+            lastHumpDistance = rng.nextCGFloat(0.1 ..< 0.5)
+            lastHumpHeight = rng.nextCGFloat(lastHumpDistance / 10 ..< lastHumpDistance / 3)
+        }
+
+        path.append(.moveTo(point: .init(x: x, y: y)))
+        while x < 1.0 {
+            randomize()
+            addHump()
+            addSpacer()
+        }
+        randomize()
+        addHump()
+
+        path.append(.addLine(point: .init(x: 1.0, y: y)))
+        path.append(.addLine(point: .init(x: 1.0, y: 1.0)))
+        path.append(.addLine(point: .init(x: 0.0, y: 1.0)))
+
+        return PathSpec(path: path)
     }
 
-    static func generateCloud(_ rng: inout RNG) -> PathSpec {
+    static func generateHills(withSeed seed: UInt64) -> [PathSpec] {
+        var rng = RNG(seed: seed)
 
+        return [
+            generateHill(withSeed: rng.next(), verticalOffset: 0.6),
+            generateHill(withSeed: rng.next(), verticalOffset: 0.7)
+        ]
+    }
+
+    static func generateCloud(withSeed seed: UInt64) -> PathSpec {
+
+        var rng = RNG(seed: seed)
         var x = rng.nextCGFloat(0.1 ..< 0.9)
         let y = rng.nextCGFloat(0.1 ..< 0.4)
         var lastHumpHeight: CGFloat = 0.0
         var lastHumpDistance: CGFloat = 0.0
         let mod: CGFloat = 0.1
 
-        func randomizeHumpAndDistance() {
+        func randomize() {
             lastHumpDistance = rng.nextCGFloat(0.1 ..< 0.15)
             lastHumpHeight = rng.nextCGFloat(0.03 ..< 0.05)
         }
@@ -132,7 +175,7 @@ struct Anderscene {
                               cp1: .init(x: x, y: y),
                               cp2: .init(x: x -% mod, y: y)))
 
-        randomizeHumpAndDistance()
+        randomize()
         addHump()
 
         let extraHumps: Int
@@ -152,7 +195,7 @@ struct Anderscene {
         for _ in 0 ..< extraHumps {
             addSpacer()
             addHump()
-            randomizeHumpAndDistance()
+            randomize()
         }
 
         // End under-tuck
@@ -166,16 +209,46 @@ struct Anderscene {
     static func generateClouds(withSeed seed: UInt64) -> [PathSpec] {
         var rng = RNG(seed: seed)
         return (0 ..< rng.nextInt(1 ..< 3)).map { _ in
-            generateCloud(&rng)
+            generateCloud(withSeed: rng.next())
         }
+    }
+
+    static func generateHaze(withSeed seed: UInt64) -> PathSpec {
+        return generateHorizontal(withSeed: seed, verticalOffset: 0.4, heightRange: -0.02 ..< 0.02)
+    }
+
+    static func generateShore(withSeed seed: UInt64) -> PathSpec {
+        return generateHorizontal(withSeed: seed, verticalOffset: 0.7, heightRange: -0.01 ..< 0.01)
+    }
+
+    /// When adding new elements they must be added after the existing ones so that the
+    ///  rng remains consistent for a given seed.
+    static func generate(withSeed seed: UInt64) -> Anderscene {
+        var rng = RNG(seed: seed)
+
+        let skyBall = generateSkyBall(withSeed: rng.next())
+        let clouds = generateClouds(withSeed: rng.next())
+        let haze = generateHaze(withSeed: rng.next())
+        let peaks = generatePeaks(withSeed: rng.next())
+        let hills = generateHills(withSeed: rng.next())
+        let shore = generateShore(withSeed: rng.next())
+
+        return Anderscene(
+            skyBall: skyBall,
+            clouds: clouds,
+            haze: haze,
+            peaks: peaks,
+            hills: hills,
+            shore: shore
+        )
     }
 
     let skyBall: SkyBallSpec
     let clouds: [PathSpec]
     let haze: PathSpec
     let peaks: PathSpec
-    let hills: RNG
-    let shore: RNG
+    let hills: [PathSpec]
+    let shore: PathSpec
 
 }
 
