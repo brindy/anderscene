@@ -59,6 +59,10 @@ struct Anderscene {
 
     static func generatePeaks(withSeed seed: UInt64) -> PathSpec {
 
+        // MARK: TODO - round the peaks
+
+        // MARK: TODO - snow??
+
         let heightRange = CGFloat(0.05) ..< CGFloat(0.1)
 
         var rng = RNG(seed: seed)
@@ -72,11 +76,7 @@ struct Anderscene {
             let height = rng.nextCGFloat(heightRange)
             path.append(.addLine(point: .init(x: x + distance / 2, y: y + height)))
 
-            if x > 0.5 {
-                y -= 0.02
-            } else {
-                y += 0.02
-            }
+            y += rng.nextCGFloat(0 ..< height / 2)
 
             path.append(.addLine(point: .init(x: x + distance, y: y)))
             x += distance
