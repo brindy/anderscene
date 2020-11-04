@@ -121,8 +121,10 @@ struct Anderscene {
                                   cp1: .init(x: x + lastHumpDistance / 2, y: y - lastHumpHeight),
                                   cp2: .init(x: x + lastHumpDistance / 2, y: y - lastHumpHeight)))
 
+            let minTreeX = x + lastHumpHeight / 3
+            let maxTreeX = x + lastHumpDistance - lastHumpHeight / 3
             trees += generateTrees(withSeed: rng.next(),
-                                   betweenX: x ..< x + lastHumpDistance,
+                                   betweenX: minTreeX ..< maxTreeX,
                                    atY: y - lastHumpHeight / 3,
                                    maxHeight: verticalOffset / 15)
 
@@ -172,8 +174,8 @@ struct Anderscene {
         var rng = RNG(seed: seed)
 
         return [
-            generateHill(withSeed: rng.next(), verticalOffset: 0.7),
-            generateHill(withSeed: rng.next(), verticalOffset: 0.75)
+            generateHill(withSeed: rng.next(), verticalOffset: 0.6),
+            generateHill(withSeed: rng.next(), verticalOffset: 0.65)
         ]
     }
 
@@ -258,14 +260,14 @@ struct Anderscene {
     }
 
     static func generateHaze(withSeed seed: UInt64) -> PathSpec {
-        return generateHorizontal(withSeed: seed, verticalOffset: 0.4, heightRange: -0.02 ..< 0.02)
+        return generateHorizontal(withSeed: seed, verticalOffset: 0.45, heightRange: -0.02 ..< 0.02)
     }
 
     static func generateShore(withSeed seed: UInt64) -> ShoreSpec {
         var rng = RNG(seed: seed)
-        let horizontal = generateHorizontal(withSeed: rng.next(), verticalOffset: 0.75, heightRange: -0.01 ..< 0.01)
+        let horizontal = generateHorizontal(withSeed: rng.next(), verticalOffset: 0.7, heightRange: -0.01 ..< 0.01)
 
-        let trees = generateTrees(withSeed: rng.next(), betweenX: -0.1 ..< 1.1, atY: 0.76, maxHeight: 0.08)
+        let trees = generateTrees(withSeed: rng.next(), betweenX: -0.1 ..< 1.1, atY: 0.71, maxHeight: 0.08)
 
         return ShoreSpec(pathSpec: horizontal, trees: trees)
     }
