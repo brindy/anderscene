@@ -8,22 +8,31 @@ public struct Palette {
         c2: Color(hex: "ecf0ff"),
         c3: Color(hex: "dde5ff"),
         c4: Color(hex: "d9e2ff"),
+
         c5: Color(hex: "a2b8ff"),
         c6: Color(hex: "cbf5ab"),
         c7: Color(hex: "bded9a"),
         c8: Color(hex: "aae67a"),
-        c9: Color(hex: "9bd96f")
+        c9: Color(hex: "9bd96f"),
+
+        c10: Color(hex: "7f8c76")
     )
 
+    // Sky
     let c1: Color
     let c2: Color
     let c3: Color
     let c4: Color
+
+    // Hills and most trees
     let c5: Color
     let c6: Color
     let c7: Color
     let c8: Color
     let c9: Color
+
+    // Some trees, shadows
+    let c10: Color
 
 }
 
@@ -59,24 +68,37 @@ struct Palette_Previews: PreviewProvider {
     static var previews: some View {
 
         VStack {
-            Rectangle()
-                .foregroundColor(Palette.default.c1)
-            Rectangle()
-                .foregroundColor(Palette.default.c2)
-            Rectangle()
-                .foregroundColor(Palette.default.c3)
-            Rectangle()
-                .foregroundColor(Palette.default.c4)
-            Rectangle()
-                .foregroundColor(Palette.default.c5)
-            Rectangle()
-                .foregroundColor(Palette.default.c6)
-            Rectangle()
-                .foregroundColor(Palette.default.c7)
-            Rectangle()
-                .foregroundColor(Palette.default.c8)
-            Rectangle()
-                .foregroundColor(Palette.default.c9)
+            Group {
+                Text("Sky")
+
+                Rectangle()
+                    .foregroundColor(Palette.default.c1)
+                Rectangle()
+                    .foregroundColor(Palette.default.c2)
+                Rectangle()
+                    .foregroundColor(Palette.default.c3)
+                Rectangle()
+                    .foregroundColor(Palette.default.c4)
+            }
+
+            Group {
+                Text("Hills & Trees")
+                Rectangle()
+                    .foregroundColor(Palette.default.c5)
+                Rectangle()
+                    .foregroundColor(Palette.default.c6)
+                Rectangle()
+                    .foregroundColor(Palette.default.c7)
+                Rectangle()
+                    .foregroundColor(Palette.default.c8)
+                Rectangle()
+                    .foregroundColor(Palette.default.c9)
+            }
+            Group {
+                Text("Trees & Rocks")
+                Rectangle()
+                    .foregroundColor(Palette.default.c10)
+            }
         }
 
     }

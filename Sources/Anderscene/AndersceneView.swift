@@ -11,7 +11,6 @@ struct SkyBall: View {
 
         let spec = config.scene.skyBall
         let size = self.size.width * spec.size
-        let position = spec.point • self.size
 
         ZStack {
             Circle()
@@ -26,7 +25,7 @@ struct SkyBall: View {
                        height: size * 0.8,
                        alignment: .center)
 
-        }.position(x: position.x, y: position.y)
+        }.position(spec.point • self.size)
 
     }
 
@@ -45,6 +44,36 @@ struct Peaks: View {
 
 }
 
+struct Tree: View {
+
+    @EnvironmentObject var config: Config
+
+    let size: CGSize
+    let spec: Anderscene.TreeSpec
+
+    var body: some View {
+
+        let position = spec.point • size
+        let width = size.width * (spec.height / 2)
+        let height = size.height * spec.height
+        let left = CGPoint(x: position.x - width, y: position.y)
+        let right = CGPoint(x: position.x + width, y: position.y)
+        let top = CGPoint(x: position.x, y: position.y - height)
+
+        ZStack {
+            Path { p in
+
+                p.move(to: left)
+                p.addLine(to: right)
+                p.addLine(to: top)
+
+            }
+
+        }
+    }
+
+}
+
 struct Hills: View {
 
     @EnvironmentObject var config: Config
@@ -52,18 +81,32 @@ struct Hills: View {
     let size: CGSize
 
     var body: some View {
-        let colors = [
+        let hillColors = [
             config.palette.c7,
             config.palette.c8
         ]
 
-        ZStack {
-            ForEach(0 ..< config.scene.hills.count, id: \.self) { index in
+        let treeColors = [
+            config.palette.c6,
+            config.palette.c8,
+            config.palette.c9,
+            config.palette.c10,
+        ]
 
-                let path = config.scene.hills[index].path
+        ZStack {
+
+            ForEach(0 ..< config.scene.hills.count, id: \.self) { index in
+                let hill = config.scene.hills[index]
+                let path = hill.pathSpec.path
+
+                ForEach(0 ..< hill.trees.count, id: \.self) { treeIndex in
+                    let tree = hill.trees[treeIndex]
+                    Tree(size: size, spec: tree)
+                        .foregroundColor(treeColors[tree.shade + index])
+                }
 
                 RelativePathRenderer(size: size, path: path)
-                    .foregroundColor(colors[index])
+                    .foregroundColor(hillColors[index])
 
             }
         }
@@ -157,7 +200,7 @@ struct AndersceneView_Previews: PreviewProvider {
 
         let config = Config(
             palette: .default,
-            scene: Anderscene.generate(withSeed: 22222222))
+            scene: Anderscene.generate(withSeed: 11111111111111111))
 
         AndersceneView()
             .previewDevice("iPhone SE (2nd generation)")
