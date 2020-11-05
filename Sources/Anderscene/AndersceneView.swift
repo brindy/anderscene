@@ -140,8 +140,8 @@ struct Clouds: View {
 
             ForEach(config.scene.clouds) { cloudSpec in
 
-                RelativePathRenderer(size: size, path: cloudSpec.path)
-                    .foregroundColor(config.palette.c2.opacity(0.5))
+                RelativePathRenderer(size: size, path: cloudSpec.pathSpec.path)
+                    .foregroundColor(config.palette.c2.opacity(cloudSpec.opacity))
 
             }
 
@@ -237,7 +237,7 @@ struct AndersceneView_Previews: PreviewProvider {
 
         let config = Config(
             palette: .default,
-            scene: Anderscene.generate(withSeed: 1))
+            scene: Anderscene.generate(withSeed: 23456))
 
         AndersceneView()
             .previewDevice(.init(rawValue: device))

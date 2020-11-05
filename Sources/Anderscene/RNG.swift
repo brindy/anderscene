@@ -27,4 +27,8 @@ struct RNG: RandomNumberGenerator {
         return CGFloat.random(in: range, using: &self)
     }
 
+    mutating func nextDouble(_ range: Range<Double>) -> Double {
+        return Double.random(in: range, using: &self)
+    }
+
 }

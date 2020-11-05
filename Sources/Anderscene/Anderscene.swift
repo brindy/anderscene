@@ -30,6 +30,15 @@ struct Anderscene {
 
     }
 
+    struct CloudSpec: Identifiable {
+
+        let id = UUID().uuidString
+
+        let pathSpec: PathSpec
+        let opacity: Double
+
+    }
+
     static func generateSkyBall(withSeed seed: UInt64) -> SkyBallSpec {
         var rng = RNG(seed: seed)
         let point = RelativePoint(x: rng.nextCGFloat(0.1 ..< 0.9),
@@ -220,7 +229,7 @@ struct Anderscene {
         ]
     }
 
-    static func generateCloud(withSeed seed: UInt64) -> PathSpec {
+    static func generateCloud(withSeed seed: UInt64) -> CloudSpec {
 
         var rng = RNG(seed: seed)
         var x = rng.nextCGFloat(0.1 ..< 0.9)
@@ -290,10 +299,11 @@ struct Anderscene {
                               cp1: .init(x: x +% mod, y: y),
                               cp2: .init(x: x -% mod, y: y)))
 
-        return PathSpec(path: path)
+        let opacity = rng.nextDouble(0.5 ..< 1.0)
+        return CloudSpec(pathSpec: PathSpec(path: path), opacity: opacity)
     }
 
-    static func generateClouds(withSeed seed: UInt64) -> [PathSpec] {
+    static func generateClouds(withSeed seed: UInt64) -> [CloudSpec] {
         var rng = RNG(seed: seed)
         return (0 ..< rng.nextInt(1 ..< 3)).map { _ in
             generateCloud(withSeed: rng.next())
@@ -351,7 +361,7 @@ struct Anderscene {
     }
 
     let skyBall: SkyBallSpec
-    let clouds: [PathSpec]
+    let clouds: [CloudSpec]
     let haze: PathSpec
     let peaks: PathSpec
     let hills: [HillSpec]
