@@ -4,39 +4,55 @@ import SwiftUI
 public struct Palette {
 
     static let `default` = Palette(
-        c1: Color(hex: "ffffff"),
-        c2: Color(hex: "ecf0ff"),
-        c3: Color(hex: "dde5ff"),
-        c4: Color(hex: "d9e2ff"),
-        c5: Color(hex: "bcccff"),
-        c6: Color(hex: "a2b8ff"),
+        skyBallForeground: Color(hex: "ffffff"),
+        skyBallHalo: Color(hex: "ecf0ff"),
 
-        c7: Color(hex: "cbf5ab"),
-        c8: Color(hex: "bded9a"),
-        c9: Color(hex: "aae67a"),
-        c10: Color(hex: "9bd96f"),
-        c11: Color(hex: "6fbf5c"),
+        sky: Color(hex: "d9e2ff"),
+        haze: Color(hex: "ecf0ff"),
+        clouds: Color(hex: "ecf0ff"),
 
-        c12: Color(hex: "7f8c76")
+        peaks: Color(hex: "cbf5ab"),
+        hillFar: Color(hex: "bded9a"),
+        hillNear: Color(hex: "aae67a"),
+        shore: Color(hex: "9bd96f"),
+
+        tree1: Color(hex: "bded9a"),
+        tree2: Color(hex: "aae67a"),
+        tree3: Color(hex: "9bd96f"),
+        tree4: Color(hex: "6fbf5c"),
+        tree5: Color(hex: "7f8c76"),
+
+        waterShoreHighlight: Color(hex: "dde5ff"),
+        waterDark: Color(hex: "bcccff")
+
     )
 
+    // Sky Ball
+    let skyBallForeground: Color
+    let skyBallHalo: Color
+
     // Sky
-    let c1: Color
-    let c2: Color
-    let c3: Color
-    let c4: Color
-    let c5: Color
-    let c6: Color
+    let sky: Color
+    let haze: Color
+    let clouds: Color
 
-    // Hills and most trees
-    let c7: Color
-    let c8: Color
-    let c9: Color
-    let c10: Color
-    let c11: Color 
+    // Hills
+    let peaks: Color
+    let hillFar: Color
+    let hillNear: Color
+    let shore: Color
 
-    // Some trees, shadows
-    let c12: Color
+    // Trees
+    let tree1: Color
+    let tree2: Color
+    let tree3: Color
+    let tree4: Color
+    let tree5: Color
+
+    // Water
+    let waterShoreHighlight: Color
+    let waterDark: Color
+
 }
 
 // https://stackoverflow.com/a/56874327/73479
@@ -70,54 +86,107 @@ extension Color {
 struct Palette_Previews: PreviewProvider {
     static var previews: some View {
 
+        let palette = Palette.default
+
         VStack(alignment: .leading) {
-            Text("Sky")
-            HStack {
-                Rectangle()
-                    .foregroundColor(Palette.default.c1)
-                    .frame(width: 50, height: 50, alignment: .center)
-                Rectangle()
-                    .foregroundColor(Palette.default.c2)
-                    .frame(width: 50, height: 50, alignment: .center)
-                Rectangle()
-                    .foregroundColor(Palette.default.c3)
-                    .frame(width: 50, height: 50, alignment: .center)
-                Rectangle()
-                    .foregroundColor(Palette.default.c4)
-                    .frame(width: 50, height: 50, alignment: .center)
-                Rectangle()
-                    .foregroundColor(Palette.default.c5)
-                    .frame(width: 50, height: 50, alignment: .center)
+            Group {
+                Text("Sky Ball")
+                HStack {
+                    Rectangle()
+                        .foregroundColor(palette.skyBallForeground)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.skyBallHalo)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                }
             }
 
-            Text("Hills & Trees")
-            HStack {
-                Rectangle()
-                    .foregroundColor(Palette.default.c7)
-                    .frame(width: 50, height: 50, alignment: .center)
-                Rectangle()
-                    .foregroundColor(Palette.default.c8)
-                    .frame(width: 50, height: 50, alignment: .center)
-                Rectangle()
-                    .foregroundColor(Palette.default.c9)
-                    .frame(width: 50, height: 50, alignment: .center)
-                Rectangle()
-                    .foregroundColor(Palette.default.c10)
-                    .frame(width: 50, height: 50, alignment: .center)
+            Group {
+                Text("Sky")
+                HStack {
+                    Rectangle()
+                        .foregroundColor(palette.sky)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.haze)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.clouds)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                }
             }
-            Text("Trees & Rocks")
-            HStack {
-                Rectangle()
-                    .foregroundColor(Palette.default.c11)
-                    .frame(width: 50, height: 50, alignment: .center)
-                Rectangle()
-                    .foregroundColor(Palette.default.c12)
-                    .frame(width: 50, height: 50, alignment: .center)
+
+            Group {
+                Text("Hills")
+                HStack {
+                    Rectangle()
+                        .foregroundColor(palette.peaks)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.hillFar)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.hillNear)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.shore)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                }
+            }
+
+            Group {
+                Text("Trees")
+                HStack {
+                    Rectangle()
+                        .foregroundColor(palette.tree1)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.tree2)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.tree3)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.tree4)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.tree5)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                }
+            }
+
+            Group {
+                Text("Water")
+                HStack {
+                    Rectangle()
+                        .foregroundColor(palette.waterShoreHighlight)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.waterDark)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                }
             }
 
             Spacer()
         }
-
+        
     }
+
 }
 

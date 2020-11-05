@@ -14,13 +14,13 @@ struct SkyBall: View {
 
         ZStack {
             Circle()
-                .foregroundColor(config.palette.c2)
+                .foregroundColor(config.palette.skyBallHalo)
                 .frame(width: size,
                        height: size,
                        alignment: .center)
 
             Circle()
-                .foregroundColor(config.palette.c1)
+                .foregroundColor(config.palette.skyBallForeground)
                 .frame(width: size * 0.8,
                        height: size * 0.8,
                        alignment: .center)
@@ -39,7 +39,7 @@ struct Peaks: View {
 
     var body: some View {
         RelativePathRenderer(size: size, path: config.scene.peaks.path)
-            .foregroundColor(config.palette.c7)
+            .foregroundColor(config.palette.peaks)
     }
 
 }
@@ -82,16 +82,16 @@ struct Hills: View {
 
     var body: some View {
         let hillColors = [
-            config.palette.c8,
-            config.palette.c9
+            config.palette.hillFar,
+            config.palette.hillNear,
         ]
 
         let treeColors = [
-            config.palette.c8,
-            config.palette.c9,
-            config.palette.c10,
-            config.palette.c11,
-            config.palette.c12
+            config.palette.tree1,
+            config.palette.tree2,
+            config.palette.tree3,
+            config.palette.tree4,
+            config.palette.tree5,
         ]
 
         ZStack {
@@ -124,7 +124,7 @@ struct Haze: View {
 
     var body: some View {
         RelativePathRenderer(size: size, path: config.scene.haze.path)
-            .foregroundColor(config.palette.c2)
+            .foregroundColor(config.palette.haze)
     }
 
 }
@@ -141,7 +141,7 @@ struct Clouds: View {
             ForEach(config.scene.clouds) { cloudSpec in
 
                 RelativePathRenderer(size: size, path: cloudSpec.pathSpec.path)
-                    .foregroundColor(config.palette.c2.opacity(cloudSpec.opacity))
+                    .foregroundColor(config.palette.clouds.opacity(cloudSpec.opacity))
 
             }
 
@@ -160,10 +160,10 @@ struct Shore: View {
 
         let spec = config.scene.shore
         let treeColors = [
-            config.palette.c11,
-            config.palette.c11,
-            config.palette.c11,
-            config.palette.c12
+            config.palette.tree4,
+            config.palette.tree4,
+            config.palette.tree4,
+            config.palette.tree5
         ]
 
         ZStack {
@@ -175,7 +175,7 @@ struct Shore: View {
             }
 
             RelativePathRenderer(size: size, path: spec.pathSpec.path)
-                .foregroundColor(config.palette.c10)
+                .foregroundColor(config.palette.shore)
 
         }
 
@@ -189,19 +189,34 @@ struct Water: View {
     let size: CGSize
 
     var body: some View {
+
+        let spec = config.scene.water
+        let offset = size.height * spec.verticalOffset
+        let highlight: CGFloat = 1.005
+
         ZStack {
 
-            Rectangle()
-                .foregroundColor(config.palette.c2)
-                .frame(width: size.width, height: size.height, alignment: .center)
-                .position(x: size.width / 2, y: size.height * 0.75)
+            Path { p in
 
-            Rectangle()
-                .foregroundColor(config.palette.c5)
-                .frame(width: size.width, height: size.height, alignment: .center)
-                .position(x: size.width / 2, y: size.height * 0.76)
+                p.move(to: CGPoint(x: 0, y: offset))
+                p.addLine(to: CGPoint(x: size.width, y: offset))
+                p.addLine(to: CGPoint(x: size.width, y: offset * highlight))
+                p.addLine(to: CGPoint(x: 0, y: offset * highlight))
 
-        }.position(x: size.width / 2, y: size.height)
+            }
+            .foregroundColor(config.palette.waterShoreHighlight)
+
+            Path { p in
+
+                p.move(to: CGPoint(x: 0, y: offset * highlight))
+                p.addLine(to: CGPoint(x: size.width, y: offset * highlight))
+                p.addLine(to: CGPoint(x: size.width, y: size.height))
+                p.addLine(to: CGPoint(x: 0, y: size.height))
+
+            }
+            .foregroundColor(config.palette.waterDark)
+
+        }
     }
 }
 
@@ -227,13 +242,9 @@ public struct AndersceneView: View {
 
                 Water(size: g.size)
 
-                // Foreground Layer 1
-
-                // Foreground Layer 2
-
             }
         }
-        .background(config.palette.c4)
+        .background(config.palette.sky)
 
     }
     
@@ -248,7 +259,7 @@ struct AndersceneView_Previews: PreviewProvider {
 
         let config = Config(
             palette: .default,
-            scene: Anderscene.generate(withSeed: 23456))
+            scene: Anderscene.generate(withSeed: 1))
 
         AndersceneView()
             .previewDevice(.init(rawValue: device))

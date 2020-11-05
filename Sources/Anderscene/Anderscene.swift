@@ -38,6 +38,12 @@ struct Anderscene {
 
     }
 
+    struct WaterSpec {
+
+        let verticalOffset: CGFloat
+
+    }
+
     static func generateSkyBall(withSeed seed: UInt64) -> SkyBallSpec {
         var rng = RNG(seed: seed)
         let point = RelativePoint(x: rng.nextCGFloat(0.1 ..< 0.9),
@@ -337,6 +343,10 @@ struct Anderscene {
         return ShoreSpec(pathSpec: horizontal, trees: trees)
     }
 
+    static func generateWaterSpec(withSeed seed: UInt64) -> WaterSpec {
+        return WaterSpec(verticalOffset: 0.735)
+    }
+
     /// When adding new elements they must be added after the existing ones so that the
     ///  rng remains consistent for a given seed.
     static func generate(withSeed seed: UInt64) -> Anderscene {
@@ -348,6 +358,7 @@ struct Anderscene {
         let peaks = generatePeaks(withSeed: rng.next())
         let hills = generateHills(withSeed: rng.next())
         let shore = generateShore(withSeed: rng.next())
+        let water = generateWaterSpec(withSeed: rng.next())
 
         return Anderscene(
             skyBall: skyBall,
@@ -355,7 +366,8 @@ struct Anderscene {
             haze: haze,
             peaks: peaks,
             hills: hills,
-            shore: shore
+            shore: shore,
+            water: water
         )
     }
 
@@ -365,6 +377,7 @@ struct Anderscene {
     let peaks: PathSpec
     let hills: [HillSpec]
     let shore: ShoreSpec
+    let water: WaterSpec
 
 }
 
