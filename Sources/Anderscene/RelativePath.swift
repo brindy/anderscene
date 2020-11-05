@@ -10,15 +10,27 @@ struct RelativePoint {
         return CGPoint(x: right.width * left.x, y: right.height * left.y)
     }
 
+    static func + (left: RelativePoint, right: RelativePoint) -> RelativePoint {
+        return RelativePoint(x: left.x + right.x, y: left.y + right.y)
+    }
+
+    static func * (left: RelativePoint, right: CGFloat) -> RelativePoint {
+        return RelativePoint(x: left.x * right, y: left.y * right)
+    }
+
+    static func - (left: RelativePoint, right: RelativePoint) -> RelativePoint {
+        return RelativePoint(x: left.x - right.x, y: left.y - right.y)
+    }
+
 }
 
 enum RelativePath {
 
     case moveTo(point: RelativePoint)
 
-    case addCurve(point: RelativePoint,
-                  cp1: RelativePoint,
-                  cp2: RelativePoint)
+    case addBezierCurve(point: RelativePoint,
+                        cp1: RelativePoint,
+                        cp2: RelativePoint)
 
     case addLine(point: RelativePoint)
 
@@ -45,7 +57,7 @@ struct RelativePathRenderer: View {
                 case .moveTo(let p):
                     path.move(to: p • size)
 
-                case .addCurve(let p, let cp1, let cp2):
+                case .addBezierCurve(let p, let cp1, let cp2):
                     path.addCurve(to: p • size,
                                   control1: cp1 • size,
                                   control2: cp2 • size)

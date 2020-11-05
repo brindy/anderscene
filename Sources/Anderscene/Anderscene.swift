@@ -5,6 +5,8 @@ import SwiftUI
 infix operator • : MultiplicationPrecedence
 struct Anderscene {
 
+    static let treeRange: Range<CGFloat> = 0.05 ..< 0.15
+
     struct SkyBallSpec {
         let point: RelativePoint
         let size: CGFloat
@@ -89,24 +91,48 @@ struct Anderscene {
         return PathSpec(path: path)
     }
 
-    static func generateTrees(withSeed seed: UInt64, betweenX xRange: Range<CGFloat>, atY y: CGFloat, maxHeight: CGFloat) -> [TreeSpec] {
+    // Based on https://b3d.interplanety.org/en/creating-points-on-a-bezier-curve/
+    static func pointAt(p0: RelativePoint,
+                        p0hr: RelativePoint,
+                        p1: RelativePoint,
+                        p1hl: RelativePoint,
+                        distance t: CGFloat) -> RelativePoint {
+
+        let t1 = p0 + (p0hr - p0) * t
+        let t2 = p0hr + (p1hl - p0hr) * t
+        let t3 = p1hl + (p1 - p1hl) * t
+        let p2hl = t1 + (t2 - t1) * t
+        let p2hr = t2 + (t3 - t2) * t
+        let p2 = p2hl + (p2hr - p2hl) * t
+
+        return p2
+    }
+
+    static func generateTrees(withSeed seed: UInt64,
+                              p1: RelativePoint,
+                              p2: RelativePoint,
+                              cp1: RelativePoint,
+                              cp2: RelativePoint,
+                              heightRange: Range<CGFloat>) -> [TreeSpec] {
 
         var rng = RNG(seed: seed)
         var trees = [TreeSpec]()
+        var distance: CGFloat = 0
 
-        let diffX = xRange.upperBound - xRange.lowerBound
-        var x = xRange.lowerBound
-        while x < xRange.upperBound {
-            x += rng.nextCGFloat(0.0 ..< diffX)
-            trees.append(TreeSpec(point: RelativePoint(x: x, y: y),
-                                  height: rng.nextCGFloat(0.02 ..< maxHeight),
-                                  shade: rng.nextInt(0 ..< 4)))
-        }
+        repeat {
+            distance += rng.nextCGFloat(-0.1 ..< 1.1)
+            let p3 = pointAt(p0: p1, p0hr: cp1, p1: p2, p1hl: cp2, distance: distance)
+            let height = rng.nextCGFloat(heightRange)
+            let shade = rng.nextInt(0 ..< 4)
+            let point = RelativePoint(x: p3.x, y: p3.y + 0.02)
+            let tree = TreeSpec(point: point, height: height, shade: shade)
+            trees.append(tree)
+        } while distance < 1.1
 
         return trees
     }
 
-    static func generateHill(withSeed seed: UInt64, verticalOffset: CGFloat) -> HillSpec {
+    static func generateHill(withSeed seed: UInt64, verticalOffset: CGFloat, treeHeightRange: Range<CGFloat>) -> HillSpec {
         var rng = RNG(seed: seed)
         var path = [RelativePath]()
         var x = rng.nextCGFloat(-0.5 ..< 0.0)
@@ -114,31 +140,33 @@ struct Anderscene {
         var lastHumpHeight: CGFloat = 0.0
         var lastHumpDistance: CGFloat = 0.0
         var trees = [TreeSpec]()
+        var lastP: RelativePoint = RelativePoint(x: x, y: y)
 
         func addHump() {
 
-            path.append(.addCurve(point: .init(x: x + lastHumpDistance, y: y - lastHumpHeight / 2),
-                                  cp1: .init(x: x + lastHumpDistance / 2, y: y - lastHumpHeight),
-                                  cp2: .init(x: x + lastHumpDistance / 2, y: y - lastHumpHeight)))
+            let p = RelativePoint(x: x + lastHumpDistance, y: y - lastHumpHeight / 2)
+            let cp1 = RelativePoint(x: x + lastHumpDistance / 2, y: y - lastHumpHeight)
+            let cp2 = RelativePoint(x: x + lastHumpDistance / 2, y: y - lastHumpHeight)
 
-            let minTreeX = x + lastHumpHeight / 3
-            let maxTreeX = x + lastHumpDistance - lastHumpHeight / 3
-            trees += generateTrees(withSeed: rng.next(),
-                                   betweenX: minTreeX ..< maxTreeX,
-                                   atY: y - lastHumpHeight / 3,
-                                   maxHeight: verticalOffset / 15)
+            path.append(.addBezierCurve(point: p, cp1: cp1, cp2: cp2))
+
+            trees += generateTrees(withSeed: seed, p1: lastP, p2: p, cp1: cp1, cp2: cp2, heightRange: treeHeightRange)
 
             x += lastHumpDistance
+            lastP = p
         }
 
         func addSpacer() {
             let height: CGFloat = lastHumpHeight / 2
             let distance = lastHumpDistance / 3
-            path.append(.addCurve(point: .init(x: x + distance, y: y - height),
-                                  cp1: .init(x: x + distance / 2, y: y - height / 2),
-                                  cp2: .init(x: x + distance, y: y - height)))
+            let p = RelativePoint(x: x + distance, y: y - height)
+            let cp1 = RelativePoint(x: x + distance / 2, y: y - height / 2)
+            let cp2 = RelativePoint(x: x + distance, y: y - height)
+
+            path.append(.addBezierCurve(point: p, cp1: cp1, cp2: cp2))
 
             x += distance
+            lastP = p
         }
 
         func randomize() {
@@ -154,7 +182,7 @@ struct Anderscene {
             lastHumpHeight = rng.nextCGFloat(lastHumpDistance / 10 ..< lastHumpDistance / 3)
         }
 
-        path.append(.moveTo(point: .init(x: x, y: y)))
+        path.append(.moveTo(point: lastP))
         while x < 1.0 {
             randomize()
             addHump()
@@ -170,12 +198,16 @@ struct Anderscene {
         return HillSpec(pathSpec: PathSpec(path: path), trees: trees)
     }
 
+    static func range(_ r: Range<CGFloat>, multipliedBy mod: CGFloat) -> Range<CGFloat> {
+        return r.lowerBound * mod ..< r.upperBound * mod
+    }
+
     static func generateHills(withSeed seed: UInt64) -> [HillSpec] {
         var rng = RNG(seed: seed)
 
         return [
-            generateHill(withSeed: rng.next(), verticalOffset: 0.6),
-            generateHill(withSeed: rng.next(), verticalOffset: 0.65)
+            generateHill(withSeed: rng.next(), verticalOffset: 0.6, treeHeightRange: range(Self.treeRange, multipliedBy: 0.4)),
+            generateHill(withSeed: rng.next(), verticalOffset: 0.65, treeHeightRange: range(Self.treeRange, multipliedBy: 0.35))
         ]
     }
 
@@ -195,7 +227,7 @@ struct Anderscene {
 
         func addHump() {
 
-            path.append(.addCurve(point: .init(x: x + lastHumpDistance, y: y - lastHumpHeight / 2),
+            path.append(.addBezierCurve(point: .init(x: x + lastHumpDistance, y: y - lastHumpHeight / 2),
                                   cp1: .init(x: x + lastHumpDistance / 2, y: y - lastHumpHeight),
                                   cp2: .init(x: x + lastHumpDistance / 2, y: y - lastHumpHeight)))
 
@@ -205,7 +237,7 @@ struct Anderscene {
         func addSpacer() {
             let height: CGFloat = lastHumpHeight / 2
             let distance = lastHumpDistance / 3
-            path.append(.addCurve(point: .init(x: x + distance, y: y - height),
+            path.append(.addBezierCurve(point: .init(x: x + distance, y: y - height),
                                   cp1: .init(x: x + distance / 2, y: y - height / 2),
                                   cp2: .init(x: x + distance, y: y - height)))
 
@@ -217,7 +249,7 @@ struct Anderscene {
         path.append(.moveTo(point: .init(x: x, y: y)))
 
         // Start under-tuck
-        path.append(.addCurve(point: .init(x: x, y: y -% mod),
+        path.append(.addBezierCurve(point: .init(x: x, y: y -% mod),
                               cp1: .init(x: x, y: y),
                               cp2: .init(x: x -% mod, y: y)))
 
@@ -245,7 +277,7 @@ struct Anderscene {
         }
 
         // End under-tuck
-        path.append(.addCurve(point: .init(x: x -% mod, y: y),
+        path.append(.addBezierCurve(point: .init(x: x -% mod, y: y),
                               cp1: .init(x: x +% mod, y: y),
                               cp2: .init(x: x -% mod, y: y)))
 
@@ -265,9 +297,21 @@ struct Anderscene {
 
     static func generateShore(withSeed seed: UInt64) -> ShoreSpec {
         var rng = RNG(seed: seed)
-        let horizontal = generateHorizontal(withSeed: rng.next(), verticalOffset: 0.7, heightRange: -0.01 ..< 0.01)
 
-        let trees = generateTrees(withSeed: rng.next(), betweenX: -0.1 ..< 1.1, atY: 0.71, maxHeight: 0.08)
+        let verticalOffset: CGFloat = 0.7
+
+        let horizontal = generateHorizontal(withSeed: rng.next(), verticalOffset: verticalOffset, heightRange: -0.01 ..< 0.01)
+
+        let p1 = RelativePoint(x: 0, y: verticalOffset)
+        let p2 = RelativePoint(x: 1.0, y: verticalOffset)
+
+        let treeRange = range(Self.treeRange, multipliedBy: verticalOffset)
+        let trees = generateTrees(withSeed: seed,
+                                  p1: p1,
+                                  p2: p2,
+                                  cp1: p1,
+                                  cp2: p2,
+                                  heightRange: treeRange)
 
         return ShoreSpec(pathSpec: horizontal, trees: trees)
     }

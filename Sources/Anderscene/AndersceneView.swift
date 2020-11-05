@@ -87,10 +87,10 @@ struct Hills: View {
         ]
 
         let treeColors = [
-            config.palette.c8,
             config.palette.c7,
-            config.palette.c10,
+            config.palette.c8,
             config.palette.c9,
+            config.palette.c10,
             config.palette.c11
         ]
 
@@ -104,6 +104,7 @@ struct Hills: View {
                     let tree = hill.trees[treeIndex]
                     Tree(size: size, spec: tree)
                         .foregroundColor(treeColors[tree.shade + index])
+                        .foregroundColor(.red)
                 }
 
                 RelativePathRenderer(size: size, path: path)
@@ -217,22 +218,24 @@ public struct AndersceneView: View {
 
 struct AndersceneView_Previews: PreviewProvider {
 
+
     static var previews: some View {
+        let device = "iPhone SE (2nd generation)"
+        // let device = "iPad Pro (12.9-inch) (4th generation)"
 
-        let config = Config(
-            palette: .default,
-            scene: Anderscene.generate(withSeed: 1))
+        ForEach(0 ..< 10, id: \.self) { index in
 
-        AndersceneView()
-            .previewDevice("iPhone SE (2nd generation)")
-            .edgesIgnoringSafeArea(.all)
-            .environmentObject(config)
+            let config = Config(
+                palette: .default,
+                scene: Anderscene.generate(withSeed: UInt64(index)))
 
-//        AndersceneView()
-//            .previewDevice("iPad Pro (12.9-inch) (4th generation)")
-//            .edgesIgnoringSafeArea(.all)
-//            .environmentObject(config)
+            AndersceneView()
+                .previewDevice(.init(rawValue: device))
+                .edgesIgnoringSafeArea(.all)
+                .environmentObject(config)
 
+        }
+        
     }
 
 }
