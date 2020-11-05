@@ -182,6 +182,17 @@ struct Shore: View {
     }
 }
 
+struct Water: View {
+
+    @EnvironmentObject var config: Config
+
+    let size: CGSize
+
+    var body: some View {
+        Text("Water")
+    }
+}
+
 public struct AndersceneView: View {
 
     @EnvironmentObject var config: Config
@@ -203,6 +214,7 @@ public struct AndersceneView: View {
                 Shore(size: g.size)
 
                 // Water
+                Water(size: g.size)
 
                 // Foreground Layer 1
 
@@ -223,19 +235,15 @@ struct AndersceneView_Previews: PreviewProvider {
         let device = "iPhone SE (2nd generation)"
         // let device = "iPad Pro (12.9-inch) (4th generation)"
 
-        ForEach(0 ..< 10, id: \.self) { index in
+        let config = Config(
+            palette: .default,
+            scene: Anderscene.generate(withSeed: 1))
 
-            let config = Config(
-                palette: .default,
-                scene: Anderscene.generate(withSeed: UInt64(index)))
+        AndersceneView()
+            .previewDevice(.init(rawValue: device))
+            .edgesIgnoringSafeArea(.all)
+            .environmentObject(config)
 
-            AndersceneView()
-                .previewDevice(.init(rawValue: device))
-                .edgesIgnoringSafeArea(.all)
-                .environmentObject(config)
-
-        }
-        
     }
 
 }

@@ -5,7 +5,7 @@ import SwiftUI
 infix operator • : MultiplicationPrecedence
 struct Anderscene {
 
-    static let treeRange: Range<CGFloat> = 0.05 ..< 0.15
+    static let treeRange: Range<CGFloat> = 0.1 ..< 0.125
 
     struct SkyBallSpec {
         let point: RelativePoint
@@ -113,29 +113,35 @@ struct Anderscene {
                               p2: RelativePoint,
                               cp1: RelativePoint,
                               cp2: RelativePoint,
-                              heightRange: Range<CGFloat>) -> [TreeSpec] {
+                              heightRange: Range<CGFloat>,
+                              maxTrees: Int) -> [TreeSpec] {
+
+        guard maxTrees > 0 else { return [] }
 
         var rng = RNG(seed: seed)
         var trees = [TreeSpec]()
-        var distance: CGFloat = 0
 
-        repeat {
-            distance += rng.nextCGFloat(-0.1 ..< 1.1)
+        for i in 0 ..< rng.nextInt(0 ..< maxTrees) {
+            let distance = rng.nextCGFloat(-0.1 ..< 1.1)
             let p3 = pointAt(p0: p1, p0hr: cp1, p1: p2, p1hl: cp2, distance: distance)
-            let height = rng.nextCGFloat(heightRange)
+            let height = i == 0 ? heightRange.lowerBound : heightRange.upperBound
             let shade = rng.nextInt(0 ..< 4)
             let point = RelativePoint(x: p3.x, y: p3.y + 0.02)
             let tree = TreeSpec(point: point, height: height, shade: shade)
             trees.append(tree)
-        } while distance < 1.1
+        }
 
         return trees
     }
 
     static func generateHill(withSeed seed: UInt64, verticalOffset: CGFloat, treeHeightRange: Range<CGFloat>) -> HillSpec {
+
+        let minDistance: CGFloat = 0.1
+        let maxDistance: CGFloat = 0.5
+
         var rng = RNG(seed: seed)
         var path = [RelativePath]()
-        var x = rng.nextCGFloat(-0.5 ..< 0.0)
+        var x = rng.nextCGFloat(-0.1 ..< 0.0)
         var y = verticalOffset
         var lastHumpHeight: CGFloat = 0.0
         var lastHumpDistance: CGFloat = 0.0
@@ -144,15 +150,16 @@ struct Anderscene {
 
         func addHump() {
 
-            let p = RelativePoint(x: x + lastHumpDistance, y: y - lastHumpHeight / 2)
-            let cp1 = RelativePoint(x: x + lastHumpDistance / 2, y: y - lastHumpHeight)
-            let cp2 = RelativePoint(x: x + lastHumpDistance / 2, y: y - lastHumpHeight)
+            let distance = lastHumpDistance
+            let p = RelativePoint(x: x + distance, y: y - lastHumpHeight / 2)
+            let cp1 = RelativePoint(x: x + distance / 2, y: y - lastHumpHeight)
+            let cp2 = RelativePoint(x: x + distance / 2, y: y - lastHumpHeight)
 
             path.append(.addBezierCurve(point: p, cp1: cp1, cp2: cp2))
 
-            trees += generateTrees(withSeed: seed, p1: lastP, p2: p, cp1: cp1, cp2: cp2, heightRange: treeHeightRange)
+            trees += generateTrees(withSeed: seed, p1: lastP, p2: p, cp1: cp1, cp2: cp2, heightRange: treeHeightRange, maxTrees: Int(distance / minDistance))
 
-            x += lastHumpDistance
+            x += distance
             lastP = p
         }
 
@@ -164,6 +171,8 @@ struct Anderscene {
             let cp2 = RelativePoint(x: x + distance, y: y - height)
 
             path.append(.addBezierCurve(point: p, cp1: cp1, cp2: cp2))
+
+            trees += generateTrees(withSeed: seed, p1: lastP, p2: p, cp1: cp1, cp2: cp2, heightRange: treeHeightRange, maxTrees: Int(distance / minDistance))
 
             x += distance
             lastP = p
@@ -178,7 +187,7 @@ struct Anderscene {
                 y += yMod
             }
 
-            lastHumpDistance = rng.nextCGFloat(0.1 ..< 0.5)
+            lastHumpDistance = rng.nextCGFloat(minDistance ..< maxDistance)
             lastHumpHeight = rng.nextCGFloat(lastHumpDistance / 10 ..< lastHumpDistance / 3)
         }
 
@@ -292,7 +301,9 @@ struct Anderscene {
     }
 
     static func generateHaze(withSeed seed: UInt64) -> PathSpec {
-        return generateHorizontal(withSeed: seed, verticalOffset: 0.45, heightRange: -0.02 ..< 0.02)
+        return generateHorizontal(withSeed: seed,
+                                  verticalOffset: 0.45,
+                                  heightRange: -0.02 ..< 0.02)
     }
 
     static func generateShore(withSeed seed: UInt64) -> ShoreSpec {
@@ -311,7 +322,8 @@ struct Anderscene {
                                   p2: p2,
                                   cp1: p1,
                                   cp2: p2,
-                                  heightRange: treeRange)
+                                  heightRange: treeRange,
+                                  maxTrees: 10)
 
         return ShoreSpec(pathSpec: horizontal, trees: trees)
     }
