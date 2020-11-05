@@ -1,6 +1,7 @@
 
 import SwiftUI
 
+infix operator • : MultiplicationPrecedence
 struct RelativePoint {
 
     let x: CGFloat

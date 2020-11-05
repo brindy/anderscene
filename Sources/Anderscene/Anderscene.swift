@@ -2,7 +2,6 @@
 import Swift
 import SwiftUI
 
-infix operator • : MultiplicationPrecedence
 struct Anderscene {
 
     static let treeRange: Range<CGFloat> = 0.1 ..< 0.125
