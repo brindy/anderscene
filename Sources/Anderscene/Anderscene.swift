@@ -100,11 +100,11 @@ struct Anderscene {
     }
 
     // Based on https://b3d.interplanety.org/en/creating-points-on-a-bezier-curve/
-    static func pointAt(p0: RelativePoint,
+    static func pointAt(distance t: CGFloat,
+                        p0: RelativePoint,
                         p0hr: RelativePoint,
                         p1: RelativePoint,
-                        p1hl: RelativePoint,
-                        distance t: CGFloat) -> RelativePoint {
+                        p1hl: RelativePoint) -> RelativePoint {
 
         let t1 = p0 + (p0hr - p0) * t
         let t2 = p0hr + (p1hl - p0hr) * t
@@ -131,7 +131,7 @@ struct Anderscene {
 
         for i in 0 ..< rng.nextInt(0 ..< maxTrees) {
             let distance = rng.nextCGFloat(-0.1 ..< 1.1)
-            let p3 = pointAt(p0: p1, p0hr: cp1, p1: p2, p1hl: cp2, distance: distance)
+            let p3 = pointAt(distance: distance, p0: p1, p0hr: cp1, p1: p2, p1hl: cp2)
             let height = i == 0 ? heightRange.lowerBound : heightRange.upperBound
             let shade = rng.nextInt(0 ..< 4)
             let point = RelativePoint(x: p3.x, y: p3.y + 0.02)

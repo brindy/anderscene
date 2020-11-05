@@ -8,15 +8,16 @@ public struct Palette {
         c2: Color(hex: "ecf0ff"),
         c3: Color(hex: "dde5ff"),
         c4: Color(hex: "d9e2ff"),
+        c5: Color(hex: "bcccff"),
+        c6: Color(hex: "a2b8ff"),
 
-        c5: Color(hex: "a2b8ff"),
-        c6: Color(hex: "cbf5ab"),
-        c7: Color(hex: "bded9a"),
-        c8: Color(hex: "aae67a"),
-        c9: Color(hex: "9bd96f"),
-        c10: Color(hex: "6fbf5c"),
+        c7: Color(hex: "cbf5ab"),
+        c8: Color(hex: "bded9a"),
+        c9: Color(hex: "aae67a"),
+        c10: Color(hex: "9bd96f"),
+        c11: Color(hex: "6fbf5c"),
 
-        c11: Color(hex: "7f8c76")
+        c12: Color(hex: "7f8c76")
     )
 
     // Sky
@@ -24,17 +25,18 @@ public struct Palette {
     let c2: Color
     let c3: Color
     let c4: Color
-
-    // Hills and most trees
     let c5: Color
     let c6: Color
+
+    // Hills and most trees
     let c7: Color
     let c8: Color
     let c9: Color
     let c10: Color
+    let c11: Color 
 
     // Some trees, shadows
-    let c11: Color
+    let c12: Color
 }
 
 // https://stackoverflow.com/a/56874327/73479
@@ -68,40 +70,52 @@ extension Color {
 struct Palette_Previews: PreviewProvider {
     static var previews: some View {
 
-        VStack {
-            Group {
-                Text("Sky")
-
+        VStack(alignment: .leading) {
+            Text("Sky")
+            HStack {
                 Rectangle()
                     .foregroundColor(Palette.default.c1)
+                    .frame(width: 50, height: 50, alignment: .center)
                 Rectangle()
                     .foregroundColor(Palette.default.c2)
+                    .frame(width: 50, height: 50, alignment: .center)
                 Rectangle()
                     .foregroundColor(Palette.default.c3)
+                    .frame(width: 50, height: 50, alignment: .center)
                 Rectangle()
                     .foregroundColor(Palette.default.c4)
-            }
-
-            Group {
-                Text("Hills & Trees")
+                    .frame(width: 50, height: 50, alignment: .center)
                 Rectangle()
                     .foregroundColor(Palette.default.c5)
-                Rectangle()
-                    .foregroundColor(Palette.default.c6)
+                    .frame(width: 50, height: 50, alignment: .center)
+            }
+
+            Text("Hills & Trees")
+            HStack {
                 Rectangle()
                     .foregroundColor(Palette.default.c7)
+                    .frame(width: 50, height: 50, alignment: .center)
                 Rectangle()
                     .foregroundColor(Palette.default.c8)
+                    .frame(width: 50, height: 50, alignment: .center)
                 Rectangle()
                     .foregroundColor(Palette.default.c9)
+                    .frame(width: 50, height: 50, alignment: .center)
                 Rectangle()
                     .foregroundColor(Palette.default.c10)
+                    .frame(width: 50, height: 50, alignment: .center)
             }
-            Group {
-                Text("Trees & Rocks")
+            Text("Trees & Rocks")
+            HStack {
                 Rectangle()
                     .foregroundColor(Palette.default.c11)
+                    .frame(width: 50, height: 50, alignment: .center)
+                Rectangle()
+                    .foregroundColor(Palette.default.c12)
+                    .frame(width: 50, height: 50, alignment: .center)
             }
+
+            Spacer()
         }
 
     }

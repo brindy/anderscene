@@ -39,7 +39,7 @@ struct Peaks: View {
 
     var body: some View {
         RelativePathRenderer(size: size, path: config.scene.peaks.path)
-            .foregroundColor(config.palette.c6)
+            .foregroundColor(config.palette.c7)
     }
 
 }
@@ -82,16 +82,16 @@ struct Hills: View {
 
     var body: some View {
         let hillColors = [
-            config.palette.c7,
-            config.palette.c8
+            config.palette.c8,
+            config.palette.c9
         ]
 
         let treeColors = [
-            config.palette.c7,
             config.palette.c8,
             config.palette.c9,
             config.palette.c10,
-            config.palette.c11
+            config.palette.c11,
+            config.palette.c12
         ]
 
         ZStack {
@@ -160,10 +160,10 @@ struct Shore: View {
 
         let spec = config.scene.shore
         let treeColors = [
-            config.palette.c10,
-            config.palette.c10,
-            config.palette.c10,
-            config.palette.c11
+            config.palette.c11,
+            config.palette.c11,
+            config.palette.c11,
+            config.palette.c12
         ]
 
         ZStack {
@@ -175,7 +175,7 @@ struct Shore: View {
             }
 
             RelativePathRenderer(size: size, path: spec.pathSpec.path)
-                .foregroundColor(config.palette.c9)
+                .foregroundColor(config.palette.c10)
 
         }
 
@@ -189,7 +189,19 @@ struct Water: View {
     let size: CGSize
 
     var body: some View {
-        Text("Water")
+        ZStack {
+
+            Rectangle()
+                .foregroundColor(config.palette.c2)
+                .frame(width: size.width, height: size.height, alignment: .center)
+                .position(x: size.width / 2, y: size.height * 0.75)
+
+            Rectangle()
+                .foregroundColor(config.palette.c5)
+                .frame(width: size.width, height: size.height, alignment: .center)
+                .position(x: size.width / 2, y: size.height * 0.76)
+
+        }.position(x: size.width / 2, y: size.height)
     }
 }
 
@@ -213,7 +225,6 @@ public struct AndersceneView: View {
 
                 Shore(size: g.size)
 
-                // Water
                 Water(size: g.size)
 
                 // Foreground Layer 1
