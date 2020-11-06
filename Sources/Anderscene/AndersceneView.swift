@@ -54,7 +54,7 @@ struct Tree: View {
     var body: some View {
 
         let position = spec.point • size
-        let width = size.width * (spec.height / 2)
+        let width = size.width * (spec.height / 2.5)
         let height = size.height * spec.height
         let left = CGPoint(x: position.x - width, y: position.y)
         let right = CGPoint(x: position.x + width, y: position.y)
@@ -65,7 +65,9 @@ struct Tree: View {
 
                 p.move(to: left)
                 p.addLine(to: right)
-                p.addLine(to: top)
+                p.addLine(to: CGPoint(x: top.x + 1, y: top.y + 5))
+                p.addQuadCurve(to: CGPoint(x: top.x - 1, y: top.y + 5), control: top)
+                p.addLine(to: CGPoint(x: top.x - 1, y: top.y + 5))
 
             }
 
@@ -191,30 +193,15 @@ struct Water: View {
     var body: some View {
 
         let spec = config.scene.water
-        let offset = size.height * spec.verticalOffset
-        let highlight: CGFloat = 1.005
 
         ZStack {
 
-            Path { p in
-
-                p.move(to: CGPoint(x: 0, y: offset))
-                p.addLine(to: CGPoint(x: size.width, y: offset))
-                p.addLine(to: CGPoint(x: size.width, y: offset * highlight))
-                p.addLine(to: CGPoint(x: 0, y: offset * highlight))
-
-            }
-            .foregroundColor(config.palette.waterShoreHighlight)
-
-            Path { p in
-
-                p.move(to: CGPoint(x: 0, y: offset * highlight))
-                p.addLine(to: CGPoint(x: size.width, y: offset * highlight))
-                p.addLine(to: CGPoint(x: size.width, y: size.height))
-                p.addLine(to: CGPoint(x: 0, y: size.height))
-
-            }
-            .foregroundColor(config.palette.waterDark)
+            RelativePathRenderer(size: size, path: spec.shoreHighlight)
+                .foregroundColor(config.palette.waterShoreHighlight)
+            RelativePathRenderer(size: size, path: spec.mainBody)
+                .foregroundColor(config.palette.waterDark)
+            RelativePathRenderer(size: size, path: spec.mainHighlight)
+                .foregroundColor(config.palette.waterHighlight)
 
         }
     }

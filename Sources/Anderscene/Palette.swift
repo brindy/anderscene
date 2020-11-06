@@ -23,7 +23,8 @@ public struct Palette {
         tree5: Color(hex: "7f8c76"),
 
         waterShoreHighlight: Color(hex: "dde5ff"),
-        waterDark: Color(hex: "bcccff")
+        waterDark: Color(hex: "bcccff"),
+        waterHighlight: Color(hex: "d9e2ff")
 
     )
 
@@ -52,6 +53,7 @@ public struct Palette {
     // Water
     let waterShoreHighlight: Color
     let waterDark: Color
+    let waterHighlight: Color
 
 }
 
@@ -178,6 +180,10 @@ struct Palette_Previews: PreviewProvider {
                         .border(Color.black)
                     Rectangle()
                         .foregroundColor(palette.waterDark)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.waterHighlight)
                         .frame(width: 50, height: 50, alignment: .center)
                         .border(Color.black)
                 }

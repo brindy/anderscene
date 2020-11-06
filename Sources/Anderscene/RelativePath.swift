@@ -23,6 +23,14 @@ struct RelativePoint {
         return RelativePoint(x: left.x - right.x, y: left.y - right.y)
     }
 
+    func modY(by: CGFloat) -> RelativePoint {
+        return RelativePoint(x: x, y: y + by)
+    }
+
+    func modX(by: CGFloat) -> RelativePoint {
+        return RelativePoint(x: x + by, y: y)
+    }
+
 }
 
 enum RelativePath {
