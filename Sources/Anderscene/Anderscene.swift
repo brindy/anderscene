@@ -344,7 +344,7 @@ struct Anderscene {
     }
 
     static func generateWaterSpec(withSeed seed: UInt64) -> WaterSpec {
-        return WaterSpec(verticalOffset: 0.735)
+        return WaterSpec(verticalOffset: 0.725)
     }
 
     /// When adding new elements they must be added after the existing ones so that the
