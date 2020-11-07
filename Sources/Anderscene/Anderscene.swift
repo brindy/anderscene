@@ -426,7 +426,7 @@ struct Anderscene {
         highlightPath.append(.moveTo(point: lastP))
 
         func stepUp() {
-            let width = rng.nextCGFloat(0.01 ..< 0.02)
+            let width = rng.nextCGFloat(0.01 ..< 0.03)
             let nextP = RelativePoint(x: lastP.x + width, y: lastP.y - 0.01)
             mainPath.append(.addBezierCurve(point: nextP, cp1: lastP, cp2: nextP.modX(by: -cpMod)))
             highlightPath.append(.addBezierCurve(point: nextP.modY(by: -hlMod).modX(by: -hlMod), cp1: lastP.modY(by: -hlMod).modX(by: -hlMod), cp2: nextP.modX(by: -cpMod).modY(by: -hlMod)))
@@ -434,7 +434,7 @@ struct Anderscene {
         }
 
         func flatLine() {
-            let width = rng.nextCGFloat(0.02 ..< 0.04)
+            let width = rng.nextCGFloat(0.01 ..< 0.03)
             let nextP = RelativePoint(x: lastP.x + width, y: lastP.y)
             mainPath.append(.addBezierCurve(point: nextP, cp1: lastP, cp2: nextP))
             highlightPath.append(.addBezierCurve(point: nextP.modY(by: -hlMod), cp1: lastP.modY(by: -hlMod), cp2: nextP.modY(by: -hlMod)))
@@ -442,7 +442,7 @@ struct Anderscene {
         }
 
         func stepDown() {
-            let width = rng.nextCGFloat(0.02 ..< 0.03)
+            let width = rng.nextCGFloat(0.01 ..< 0.03)
             let nextP = RelativePoint(x: lastP.x + width, y: lastP.y + 0.01)
             mainPath.append(.addBezierCurve(point: nextP, cp1: lastP.modX(by: cpMod), cp2: nextP.modX(by: -cpMod)))
             highlightPath.append(.addBezierCurve(point: nextP.modY(by: -hlMod), cp1: lastP.modX(by: cpMod).modY(by: -hlMod), cp2: nextP.modX(by: -cpMod).modY(by: -hlMod)))

@@ -301,7 +301,7 @@ struct AndersceneView_Previews: PreviewProvider {
 
         let config = Config(
             palette: .default,
-            scene: Anderscene.generate(withSeed: 1111111))
+            scene: Anderscene.generate(withSeed: 6666666666666))
 
         AndersceneView()
             .previewDevice(.init(rawValue: device))
