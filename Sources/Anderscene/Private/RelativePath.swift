@@ -67,6 +67,23 @@ struct RelativePoint {
         return RelativePoint(x: y, y: -x)
     }
 
+    // Based on https://b3d.interplanety.org/en/creating-points-on-a-bezier-curve/
+    static func pointAtDistanceOnBezierCurve(distance t: CGFloat,
+                                            p0: RelativePoint,
+                                            p0hr: RelativePoint,
+                                            p1: RelativePoint,
+                                            p1hl: RelativePoint) -> RelativePoint {
+
+        let t1 = p0 + (p0hr - p0) * t
+        let t2 = p0hr + (p1hl - p0hr) * t
+        let t3 = p1hl + (p1 - p1hl) * t
+        let p2hl = t1 + (t2 - t1) * t
+        let p2hr = t2 + (t3 - t2) * t
+        let p2 = p2hl + (p2hr - p2hl) * t
+
+        return p2
+    }
+
 }
 
 enum RelativePath {
@@ -119,31 +136,4 @@ struct StrokedPath: View {
 
         }.stroke(lineWidth: lineWidth)
     }
-}
-
-extension Array where Element == RelativePath {
-
-    func applyTo(path: inout Path, withSize size: CGSize) {
-        for progress in self {
-
-            switch progress {
-            case .moveTo(let p):
-                path.move(to: p • size)
-
-            case .addBezierCurve(let p, let cp1, let cp2):
-                path.addCurve(to: p • size,
-                              control1: cp1 • size,
-                              control2: cp2 • size)
-
-            case .addLine(let p):
-                path.addLine(to: p • size)
-
-            case .addQuadraticCurve(let p, let cp):
-                path.addQuadCurve(to: p • size, control: cp • size)
-
-            }
-
-        }
-    }
-
 }

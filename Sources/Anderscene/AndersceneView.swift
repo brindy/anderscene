@@ -49,7 +49,7 @@ struct Tree: View {
     @EnvironmentObject var config: Config
 
     let size: CGSize
-    let spec: Anderscene.TreeSpec
+    let spec: TreeSpec
 
     var body: some View {
 
@@ -301,7 +301,7 @@ struct AndersceneView_Previews: PreviewProvider {
 
         let config = Config(
             palette: .default,
-            scene: Anderscene.generate(withSeed: 6666666666666))
+            scene: Anderscene.generate(withSeed: 1))
 
         AndersceneView()
             .previewDevice(.init(rawValue: device))
