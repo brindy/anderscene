@@ -46,6 +46,16 @@ struct Anderscene {
 
     }
 
+    struct RockSpec: Identifiable {
+
+        let id = UUID().uuidString
+
+        let mainPathSpec: PathSpec
+        let highlightPathSpec: PathSpec
+        let reflectionPathSpec: PathSpec
+
+    }
+
     static func generateSkyBall(withSeed seed: UInt64) -> SkyBallSpec {
         var rng = RNG(seed: seed)
         let point = RelativePoint(x: rng.nextCGFloat(0.1 ..< 0.9),
@@ -398,6 +408,70 @@ struct Anderscene {
                          mainHighlight: mainHighlight)
     }
 
+    static func generateRock(withSeed seed: UInt64, horizontalOffset: CGFloat) -> RockSpec {
+
+        var rng = RNG(seed: seed)
+        let cpMod: CGFloat = 0.01
+        let verticalOffset: CGFloat = 0.71
+
+        var lastP = RelativePoint(x: horizontalOffset + 0.01, y: verticalOffset + 0.02)
+
+        var mainPath = [RelativePath]()
+
+        mainPath.append(.moveTo(point: lastP))
+
+        func stepUp() {
+            let width = rng.nextCGFloat(0.01 ..< 0.02)
+            let nextP = RelativePoint(x: lastP.x + width, y: lastP.y - 0.01)
+            mainPath.append(.addBezierCurve(point: nextP, cp1: lastP, cp2: nextP.modX(by: -cpMod)))
+            lastP = nextP
+        }
+
+        func flatLine() {
+            let width = rng.nextCGFloat(0.02 ..< 0.04)
+            let nextP = RelativePoint(x: lastP.x + width, y: lastP.y)
+            mainPath.append(.addBezierCurve(point: nextP, cp1: lastP, cp2: nextP))
+            lastP = nextP
+        }
+
+        func stepDown() {
+            let width = rng.nextCGFloat(0.02 ..< 0.03)
+            let nextP = RelativePoint(x: lastP.x + width, y: lastP.y + 0.01)
+            mainPath.append(.addBezierCurve(point: nextP, cp1: lastP.modX(by: cpMod), cp2: nextP.modX(by: -cpMod)))
+            lastP = nextP
+        }
+
+        stepUp()
+        stepUp()
+        flatLine()
+        stepDown()
+        flatLine()
+        stepDown()
+
+        // TODO Tuck under right
+
+        // TODO Flat line
+
+        // TODO Tuck under left
+
+        // TODO Create reflection - total width x max height, scaled up
+
+        return RockSpec(mainPathSpec: PathSpec(path: mainPath),
+                        highlightPathSpec: PathSpec(path: []),
+                        reflectionPathSpec: PathSpec(path: []))
+    }
+
+    static func generateRocks(withSeed seed: UInt64) -> [RockSpec] {
+        var rng = RNG(seed: seed)
+        var x: CGFloat = -0.3
+        var rocks = [RockSpec]()
+        while x < 1.2 {
+            x += rng.nextCGFloat(0.3 ..< 0.9)
+            rocks.append(generateRock(withSeed: rng.next(), horizontalOffset: x))
+        }
+        return rocks
+    }
+
     /// When adding new elements they must be added after the existing ones so that the
     ///  rng remains consistent for a given seed.
     static func generate(withSeed seed: UInt64) -> Anderscene {
@@ -410,6 +484,7 @@ struct Anderscene {
         let hills = generateHills(withSeed: rng.next())
         let shore = generateShore(withSeed: rng.next())
         let water = generateWaterSpec(withSeed: rng.next())
+        let rocks = generateRocks(withSeed: rng.next())
 
         return Anderscene(
             skyBall: skyBall,
@@ -418,7 +493,8 @@ struct Anderscene {
             peaks: peaks,
             hills: hills,
             shore: shore,
-            water: water
+            water: water,
+            rocks: rocks
         )
     }
 
@@ -429,6 +505,7 @@ struct Anderscene {
     let hills: [HillSpec]
     let shore: ShoreSpec
     let water: WaterSpec
+    let rocks: [RockSpec]
 
 }
 

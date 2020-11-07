@@ -38,7 +38,7 @@ struct Peaks: View {
     let size: CGSize
 
     var body: some View {
-        RelativePathRenderer(size: size, path: config.scene.peaks.path)
+        FilledPath(size: size, path: config.scene.peaks.path)
             .foregroundColor(config.palette.peaks)
     }
 
@@ -109,7 +109,7 @@ struct Hills: View {
                         .foregroundColor(.red)
                 }
 
-                RelativePathRenderer(size: size, path: path)
+                FilledPath(size: size, path: path)
                     .foregroundColor(hillColors[index])
 
             }
@@ -125,7 +125,7 @@ struct Haze: View {
     let size: CGSize
 
     var body: some View {
-        RelativePathRenderer(size: size, path: config.scene.haze.path)
+        FilledPath(size: size, path: config.scene.haze.path)
             .foregroundColor(config.palette.haze)
     }
 
@@ -142,7 +142,7 @@ struct Clouds: View {
 
             ForEach(config.scene.clouds) { cloudSpec in
 
-                RelativePathRenderer(size: size, path: cloudSpec.pathSpec.path)
+                FilledPath(size: size, path: cloudSpec.pathSpec.path)
                     .foregroundColor(config.palette.clouds.opacity(cloudSpec.opacity))
 
             }
@@ -176,7 +176,7 @@ struct Shore: View {
                     .foregroundColor(treeColors[tree.shade])
             }
 
-            RelativePathRenderer(size: size, path: spec.pathSpec.path)
+            FilledPath(size: size, path: spec.pathSpec.path)
                 .foregroundColor(config.palette.shore)
 
         }
@@ -196,15 +196,58 @@ struct Water: View {
 
         ZStack {
 
-            RelativePathRenderer(size: size, path: spec.shoreHighlight)
+            FilledPath(size: size, path: spec.shoreHighlight)
                 .foregroundColor(config.palette.waterShoreHighlight)
-            RelativePathRenderer(size: size, path: spec.mainBody)
+            FilledPath(size: size, path: spec.mainBody)
                 .foregroundColor(config.palette.waterDark)
-            RelativePathRenderer(size: size, path: spec.mainHighlight)
+            FilledPath(size: size, path: spec.mainHighlight)
                 .foregroundColor(config.palette.waterHighlight)
 
         }
     }
+}
+
+struct Rocks: View {
+
+    @EnvironmentObject var config: Config
+
+    let size: CGSize
+
+    var body: some View {
+
+        let spec = config.scene.rocks
+
+        ZStack {
+
+            ForEach(spec) { rockSpec in
+
+                let main = rockSpec.mainPathSpec
+                let highlight = rockSpec.highlightPathSpec
+                let reflection = rockSpec.reflectionPathSpec
+
+                FilledPath(size: size,
+                           path: main.path)
+                           // , lineWidth: 3)
+                    .foregroundColor(config.palette.rock)
+                    // .foregroundColor(.red)
+
+                FilledPath(size: size,
+                           path: highlight.path)
+                    // .foregroundColor(config.palette.rockHighlight)
+                    .foregroundColor(.yellow)
+                
+                FilledPath(size: size,
+                           path: reflection.path)
+                           //, lineWidth: 3)
+                    .foregroundColor(config.palette.waterDark)
+                    //.foregroundColor(.purple)
+
+            }
+
+        }
+
+    }
+
 }
 
 public struct AndersceneView: View {
@@ -229,6 +272,18 @@ public struct AndersceneView: View {
 
                 Water(size: g.size)
 
+                Rocks(size: g.size)
+
+                // Island
+
+                // Foreground Hill
+
+                // Foreground Rocks
+
+                // Foreground Embankment (w/flowers)
+
+                // Foreground Sillhouette (w/flowers+plants)
+
             }
         }
         .background(config.palette.sky)
@@ -246,7 +301,7 @@ struct AndersceneView_Previews: PreviewProvider {
 
         let config = Config(
             palette: .default,
-            scene: Anderscene.generate(withSeed: 1))
+            scene: Anderscene.generate(withSeed: 11111111))
 
         AndersceneView()
             .previewDevice(.init(rawValue: device))

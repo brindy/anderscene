@@ -24,8 +24,10 @@ public struct Palette {
 
         waterShoreHighlight: Color(hex: "dde5ff"),
         waterDark: Color(hex: "bcccff"),
-        waterHighlight: Color(hex: "d9e2ff")
+        waterHighlight: Color(hex: "d9e2ff"),
 
+        rock: Color(hex: "66705f"),
+        rockHighlight: Color(hex: "7f8c76")
     )
 
     // Sky Ball
@@ -54,6 +56,10 @@ public struct Palette {
     let waterShoreHighlight: Color
     let waterDark: Color
     let waterHighlight: Color
+
+    // Rocks
+    let rock: Color
+    let rockHighlight: Color
 
 }
 
@@ -184,6 +190,20 @@ struct Palette_Previews: PreviewProvider {
                         .border(Color.black)
                     Rectangle()
                         .foregroundColor(palette.waterHighlight)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                }
+            }
+
+            Group {
+                Text("Rocks")
+                HStack {
+                    Rectangle()
+                        .foregroundColor(palette.rock)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.rockHighlight)
                         .frame(width: 50, height: 50, alignment: .center)
                         .border(Color.black)
                 }
