@@ -52,6 +52,7 @@ struct Anderscene {
 
         let mainPathSpec: PathSpec
         let highlightPathSpec: PathSpec
+        let waterHighlight: PathSpec
         let reflectionPathSpec: PathSpec
 
     }
@@ -410,20 +411,25 @@ struct Anderscene {
 
     static func generateRock(withSeed seed: UInt64, horizontalOffset: CGFloat) -> RockSpec {
 
+        let verticalOffset: CGFloat = 0.73
+
         var rng = RNG(seed: seed)
         let cpMod: CGFloat = 0.01
-        let verticalOffset: CGFloat = 0.71
+        let hlMod: CGFloat = 0.004
 
-        var lastP = RelativePoint(x: horizontalOffset + 0.01, y: verticalOffset + 0.02)
+        var lastP = RelativePoint(x: horizontalOffset + 0.01, y: verticalOffset)
 
         var mainPath = [RelativePath]()
+        var highlightPath = [RelativePath]()
 
         mainPath.append(.moveTo(point: lastP))
+        highlightPath.append(.moveTo(point: lastP))
 
         func stepUp() {
             let width = rng.nextCGFloat(0.01 ..< 0.02)
             let nextP = RelativePoint(x: lastP.x + width, y: lastP.y - 0.01)
             mainPath.append(.addBezierCurve(point: nextP, cp1: lastP, cp2: nextP.modX(by: -cpMod)))
+            highlightPath.append(.addBezierCurve(point: nextP.modY(by: -hlMod).modX(by: -hlMod), cp1: lastP.modY(by: -hlMod).modX(by: -hlMod), cp2: nextP.modX(by: -cpMod).modY(by: -hlMod)))
             lastP = nextP
         }
 
@@ -431,6 +437,7 @@ struct Anderscene {
             let width = rng.nextCGFloat(0.02 ..< 0.04)
             let nextP = RelativePoint(x: lastP.x + width, y: lastP.y)
             mainPath.append(.addBezierCurve(point: nextP, cp1: lastP, cp2: nextP))
+            highlightPath.append(.addBezierCurve(point: nextP.modY(by: -hlMod), cp1: lastP.modY(by: -hlMod), cp2: nextP.modY(by: -hlMod)))
             lastP = nextP
         }
 
@@ -438,26 +445,41 @@ struct Anderscene {
             let width = rng.nextCGFloat(0.02 ..< 0.03)
             let nextP = RelativePoint(x: lastP.x + width, y: lastP.y + 0.01)
             mainPath.append(.addBezierCurve(point: nextP, cp1: lastP.modX(by: cpMod), cp2: nextP.modX(by: -cpMod)))
+            highlightPath.append(.addBezierCurve(point: nextP.modY(by: -hlMod), cp1: lastP.modX(by: cpMod).modY(by: -hlMod), cp2: nextP.modX(by: -cpMod).modY(by: -hlMod)))
             lastP = nextP
         }
 
         stepUp()
-        stepUp()
+
+        for _ in 0 ..< rng.nextInt(0 ..< 3) {
+            if 0 == rng.nextInt(0 ..< 2) {
+                stepUp()
+            } else {
+                flatLine()
+            }
+        }
+
         flatLine()
         stepDown()
-        flatLine()
-        stepDown()
 
-        // TODO Tuck under right
+        while lastP.y < verticalOffset {
+            if 0 == rng.nextInt(0 ..< 2) {
+                stepDown()
+            } else {
+                flatLine()
+            }
+        }
 
-        // TODO Flat line
+        highlightPath.removeLast()
+        highlightPath.append(.addBezierCurve(point: lastP, cp1: lastP.modY(by: -cpMod - hlMod).modX(by: -cpMod - hlMod), cp2: lastP))
 
-        // TODO Tuck under left
+        // TODO Create water highlight
 
         // TODO Create reflection - total width x max height, scaled up
 
         return RockSpec(mainPathSpec: PathSpec(path: mainPath),
-                        highlightPathSpec: PathSpec(path: []),
+                        highlightPathSpec: PathSpec(path: highlightPath),
+                        waterHighlight: PathSpec(path: []),
                         reflectionPathSpec: PathSpec(path: []))
     }
 
