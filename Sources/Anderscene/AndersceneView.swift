@@ -221,26 +221,26 @@ struct Rocks: View {
 
             ForEach(spec) { rockSpec in
 
-                let main = rockSpec.mainPathSpec
-                let highlight = rockSpec.highlightPathSpec
-                let reflection = rockSpec.reflectionPathSpec
-
+                let main = rockSpec.main
+                let highlight = rockSpec.highlight
+                let reflection = rockSpec.reflection
+                let water = rockSpec.water
 
                 FilledPath(size: size,
+                           path: water.path)
+                    .foregroundColor(config.palette.waterShoreHighlight)
+                
+                FilledPath(size: size,
                            path: highlight.path)
-                           // , lineWidth: 3)
                     .foregroundColor(config.palette.rockHighlight)
 
                 FilledPath(size: size,
                            path: main.path)
                     .foregroundColor(config.palette.rock)
-                     //.foregroundColor(.red)
 
                 FilledPath(size: size,
                            path: reflection.path)
-                           //, lineWidth: 3)
                     .foregroundColor(config.palette.waterDark)
-                    //.foregroundColor(.purple)
 
             }
 
@@ -301,7 +301,7 @@ struct AndersceneView_Previews: PreviewProvider {
 
         let config = Config(
             palette: .default,
-            scene: Anderscene.generate(withSeed: 1))
+            scene: Anderscene.generate(withSeed: 1111111))
 
         AndersceneView()
             .previewDevice(.init(rawValue: device))

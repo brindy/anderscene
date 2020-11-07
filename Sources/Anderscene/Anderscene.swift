@@ -50,10 +50,10 @@ struct Anderscene {
 
         let id = UUID().uuidString
 
-        let mainPathSpec: PathSpec
-        let highlightPathSpec: PathSpec
-        let waterHighlight: PathSpec
-        let reflectionPathSpec: PathSpec
+        let main: PathSpec
+        let highlight: PathSpec
+        let water: PathSpec
+        let reflection: PathSpec
 
     }
 
@@ -473,14 +473,37 @@ struct Anderscene {
         highlightPath.removeLast()
         highlightPath.append(.addBezierCurve(point: lastP, cp1: lastP.modY(by: -cpMod - hlMod).modX(by: -cpMod - hlMod), cp2: lastP))
 
-        // TODO Create water highlight
+        // Create water highlight
+        let waterTopLeft = RelativePoint(x: horizontalOffset - 0.01, y: verticalOffset - 0.005)
+        let waterTopRight = RelativePoint(x: lastP.x + 0.015, y: verticalOffset - 0.005)
+        let waterBottomRight = RelativePoint(x: lastP.x + 0.01, y: lastP.y + 0.005)
+        let waterBottomLeft = RelativePoint(x: horizontalOffset - 0.005, y: lastP.y + 0.005)
 
-        // TODO Create reflection - total width x max height, scaled up
+        let waterHighlightPath: [RelativePath] = [
+            .moveTo(point: waterTopLeft),
+            .addLine(point: waterTopRight),
+            .addLine(point: waterBottomRight),
+            .addLine(point: waterBottomLeft),
+        ]
 
-        return RockSpec(mainPathSpec: PathSpec(path: mainPath),
-                        highlightPathSpec: PathSpec(path: highlightPath),
-                        waterHighlight: PathSpec(path: []),
-                        reflectionPathSpec: PathSpec(path: []))
+        // Create reflection
+        let reflectionTopLeft = RelativePoint(x: horizontalOffset - 0.05, y: verticalOffset + 0.01)
+        let reflectionTopRight = RelativePoint(x: lastP.x + 0.075, y: verticalOffset + 0.01)
+        let reflectionBottomRight = RelativePoint(x: lastP.x + 0.025, y: lastP.y + 0.02)
+        let reflectionBottomLeft = RelativePoint(x: horizontalOffset - 0.02, y: lastP.y + 0.02)
+
+        let reflectionPath: [RelativePath] = [
+            .moveTo(point: reflectionTopLeft),
+            .addBezierCurve(point: reflectionTopRight, cp1: reflectionTopLeft, cp2: reflectionTopRight),
+            .addBezierCurve(point: reflectionBottomRight, cp1: reflectionTopRight, cp2: reflectionBottomRight),
+            .addBezierCurve(point: reflectionBottomLeft, cp1: reflectionBottomRight, cp2: reflectionBottomLeft),
+            .addLine(point: reflectionTopLeft)
+        ]
+
+        return RockSpec(main: PathSpec(path: mainPath),
+                        highlight: PathSpec(path: highlightPath),
+                        water: PathSpec(path: waterHighlightPath),
+                        reflection: PathSpec(path: reflectionPath))
     }
 
     static func generateRocks(withSeed seed: UInt64) -> [RockSpec] {
