@@ -8,32 +8,29 @@ struct RocksGenerator {
     func generateRock(withSeed seed: UInt64, horizontalOffset: CGFloat) -> RockSpec {
 
         let verticalOffset: CGFloat = 0.73
+        let cpMod: CGFloat = 0.01
 
         var rng = RNG(seed: seed)
-        let cpMod: CGFloat = 0.01
-        let hlMod: CGFloat = 0.004
-
         var lastP = RelativePoint(x: horizontalOffset + 0.01, y: verticalOffset)
+        var maxY: CGFloat = 0.0
 
         var mainPath = [RelativePath]()
-        var highlightPath = [RelativePath]()
 
         mainPath.append(.moveTo(point: lastP))
-        highlightPath.append(.moveTo(point: lastP))
 
         func stepUp() {
+            let height: CGFloat = 0.01
             let width = rng.nextCGFloat(0.01 ..< 0.03)
-            let nextP = RelativePoint(x: lastP.x + width, y: lastP.y - 0.01)
+            let nextP = RelativePoint(x: lastP.x + width, y: lastP.y - height)
             mainPath.append(.addBezierCurve(point: nextP, cp1: lastP, cp2: nextP.modX(by: -cpMod)))
-            highlightPath.append(.addBezierCurve(point: nextP.modY(by: -hlMod).modX(by: -hlMod), cp1: lastP.modY(by: -hlMod).modX(by: -hlMod), cp2: nextP.modX(by: -cpMod).modY(by: -hlMod)))
             lastP = nextP
+            maxY += height
         }
 
         func flatLine() {
             let width = rng.nextCGFloat(0.01 ..< 0.03)
             let nextP = RelativePoint(x: lastP.x + width, y: lastP.y)
             mainPath.append(.addBezierCurve(point: nextP, cp1: lastP, cp2: nextP))
-            highlightPath.append(.addBezierCurve(point: nextP.modY(by: -hlMod).modX(by: hlMod), cp1: lastP.modY(by: -hlMod), cp2: nextP.modY(by: -hlMod)))
             lastP = nextP
         }
 
@@ -41,7 +38,6 @@ struct RocksGenerator {
             let width = rng.nextCGFloat(0.01 ..< 0.03)
             let nextP = RelativePoint(x: lastP.x + width, y: lastP.y + 0.01)
             mainPath.append(.addBezierCurve(point: nextP, cp1: lastP.modX(by: cpMod), cp2: nextP.modX(by: -cpMod)))
-            highlightPath.append(.addBezierCurve(point: nextP.modY(by: -hlMod), cp1: lastP.modX(by: cpMod).modY(by: -hlMod), cp2: nextP.modX(by: -cpMod).modY(by: -hlMod)))
             lastP = nextP
         }
 
@@ -66,12 +62,6 @@ struct RocksGenerator {
             }
         }
 
-        highlightPath.removeLast()
-        highlightPath.append(.addBezierCurve(
-                                point: lastP,
-                                cp1: lastP.modX(by: 0.001).modY(by: -hlMod),
-                                cp2: lastP.modX(by: -0.001).modY(by: 0.001)))
-
         // Create water highlight
         let waterTopLeft = RelativePoint(x: horizontalOffset - 0.0075, y: verticalOffset - 0.005)
         let waterTopRight = RelativePoint(x: lastP.x + 0.015, y: verticalOffset - 0.005)
@@ -80,16 +70,20 @@ struct RocksGenerator {
 
         let waterHighlightPath: [RelativePath] = [
             .moveTo(point: waterTopLeft),
+            .addLine(point: waterTopLeft.modX(by: 0.01)),
+            .addLine(point: RelativePoint(x: horizontalOffset + 0.01, y: verticalOffset)),
+            .addLine(point: lastP),
             .addLine(point: waterTopRight),
             .addLine(point: waterBottomRight),
             .addLine(point: waterBottomLeft),
         ]
 
         // Create reflection
+        maxY = max(0.02, maxY * 0.75)
         let reflectionTopLeft = RelativePoint(x: horizontalOffset - 0.05, y: verticalOffset + 0.01)
         let reflectionTopRight = RelativePoint(x: lastP.x + 0.075, y: verticalOffset + 0.01)
-        let reflectionBottomRight = RelativePoint(x: lastP.x + 0.025, y: lastP.y + 0.02)
-        let reflectionBottomLeft = RelativePoint(x: horizontalOffset - 0.02, y: lastP.y + 0.02)
+        let reflectionBottomRight = RelativePoint(x: lastP.x + 0.025, y: lastP.y + maxY)
+        let reflectionBottomLeft = RelativePoint(x: horizontalOffset - 0.02, y: lastP.y + maxY)
 
         let reflectionPath: [RelativePath] = [
             .moveTo(point: reflectionTopLeft),
@@ -100,7 +94,6 @@ struct RocksGenerator {
         ]
 
         return RockSpec(main: PathSpec(path: mainPath),
-                        highlight: PathSpec(path: highlightPath),
                         water: PathSpec(path: waterHighlightPath),
                         reflection: PathSpec(path: reflectionPath))
     }
@@ -122,7 +115,7 @@ struct RocksGenerator_Previews: PreviewProvider {
     static var previews: some View {
 
         let palette = Palette.default
-        let scene = Anderscene.generate(withSeed: 1)
+        let scene = Anderscene.generate(withSeed: 11)
         let config = Config(palette: palette, scene: scene)
 
         GeometryReader { g in

@@ -134,6 +134,9 @@ struct StrokedPath: View {
 
             self.path.applyTo(path: &path, withSize: size)
 
-        }.stroke(lineWidth: lineWidth)
+        }
+        .stroke(style: StrokeStyle(lineWidth: lineWidth,
+                                   lineCap: .round))
+
     }
 }

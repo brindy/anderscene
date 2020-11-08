@@ -6,7 +6,6 @@ struct RockSpec: Identifiable {
     let id = UUID().uuidString
 
     let main: PathSpec
-    let highlight: PathSpec
     let water: PathSpec
     let reflection: PathSpec
 

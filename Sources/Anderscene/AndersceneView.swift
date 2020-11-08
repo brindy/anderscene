@@ -219,24 +219,24 @@ struct Rocks: View {
 
         ZStack {
 
-            ForEach(spec) { rockSpec in
+            ForEach(spec) { rock in
 
-                let main = rockSpec.main
-                let highlight = rockSpec.highlight
-                let reflection = rockSpec.reflection
-                let water = rockSpec.water
+                let main = rock.main
+                let reflection = rock.reflection
+                let water = rock.water
 
-                FilledPath(size: size,
-                           path: water.path)
-                    .foregroundColor(config.palette.waterShoreHighlight)
-                
-                FilledPath(size: size,
-                           path: highlight.path)
+                StrokedPath(size: size,
+                            path: main.path,
+                            lineWidth: 3)
                     .foregroundColor(config.palette.rockHighlight)
 
                 FilledPath(size: size,
                            path: main.path)
                     .foregroundColor(config.palette.rock)
+
+                FilledPath(size: size,
+                           path: water.path)
+                    .foregroundColor(config.palette.waterShoreHighlight)
 
                 FilledPath(size: size,
                            path: reflection.path)
