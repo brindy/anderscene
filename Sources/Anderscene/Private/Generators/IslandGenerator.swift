@@ -47,7 +47,7 @@ struct IslandGenerator {
         ]
         
         let treeGen = TreeGenerator(seed: rng.next())
-        let trees = treeGen.generate(p1: p1, p2: p3.modX(by: -0.02), cp1: p1, cp2: p3, heightRangeMultiplier: 0.9, maxTrees: 3)
+        let trees = treeGen.generate(p1: p1.modX(by: 0.05), p2: p3.modX(by: -0.05), cp1: p1, cp2: p3, heightRangeMultiplier: 0.9, maxTrees: 3, yOffset: 0.0)
 
         return IslandSpec(main: PathSpec(path: mainPath),
                           water: PathSpec(path: waterPath),
@@ -62,7 +62,7 @@ struct IslandGenerator_Previews: PreviewProvider {
     static var previews: some View {
 
         let palette = Palette.default
-        let scene = Anderscene.generate(withSeed: 22222222)
+        let scene = Anderscene.generate(withSeed: 2)
         let config = Config(palette: palette, scene: scene)
 
         GeometryReader { g in

@@ -16,13 +16,14 @@ struct ShoreGenerator {
         let p1 = RelativePoint(x: 0, y: verticalOffset)
         let p2 = RelativePoint(x: 1.0, y: verticalOffset)
 
-        let trees = TreeGenerator(seed: seed).generate(
-                                  p1: p1,
-                                  p2: p2,
-                                  cp1: p1,
-                                  cp2: p2,
-                                  heightRangeMultiplier: verticalOffset,
-                                  maxTrees: 10)
+        let generator = TreeGenerator(seed: seed)
+        let trees = generator.generate(p1: p1,
+                                       p2: p2,
+                                       cp1: p1,
+                                       cp2: p2,
+                                       heightRangeMultiplier: verticalOffset,
+                                       maxTrees: 10,
+                                       yOffset: 0.0)
 
         return ShoreSpec(pathSpec: horizontal, trees: trees)
     }
