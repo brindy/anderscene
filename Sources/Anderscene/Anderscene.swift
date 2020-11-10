@@ -17,6 +17,7 @@ struct Anderscene {
         let shore = ShoreGenerator(seed: rng.next()).generate()
         let water = WaterGenerator(seed: rng.next()).generate()
         let rocks = RocksGenerator(seed: rng.next()).generate()
+        let island = IslandGenerator(seed: rng.next()).generate()
 
         return Anderscene(
             skyBall: skyBall,
@@ -26,7 +27,8 @@ struct Anderscene {
             hills: hills,
             shore: shore,
             water: water,
-            rocks: rocks
+            rocks: rocks,
+            island: island
         )
     }
 
@@ -38,5 +40,6 @@ struct Anderscene {
     let shore: ShoreSpec
     let water: WaterSpec
     let rocks: [RockSpec]
+    let island: IslandSpec
 
 }

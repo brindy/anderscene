@@ -27,7 +27,11 @@ public struct Palette {
         waterHighlight: Color(hex: "d9e2ff"),
 
         rock: Color(hex: "66705f"),
-        rockHighlight: Color(hex: "7f8c76")
+        rockHighlight: Color(hex: "7f8c76"),
+
+        islandGrass: Color(hex: "6fbf5c"),
+        islandHighlight: Color(hex: "9bd96f"),
+        islandReflection: Color(hex: "a2b8ff")
     )
 
     // Sky Ball
@@ -60,6 +64,11 @@ public struct Palette {
     // Rocks
     let rock: Color
     let rockHighlight: Color
+
+    // Island
+    let islandGrass: Color
+    let islandHighlight: Color
+    let islandReflection: Color
 
 }
 

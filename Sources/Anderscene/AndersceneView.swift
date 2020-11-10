@@ -207,6 +207,36 @@ struct Water: View {
     }
 }
 
+struct Rock: View {
+
+    @EnvironmentObject var config: Config
+
+    let size: CGSize
+    let rock: RockSpec
+
+    var body: some View {
+        let main = rock.main
+        let water = rock.water
+
+        ZStack {
+            StrokedPath(size: size,
+                        path: main.path,
+                        lineWidth: 4)
+                .foregroundColor(config.palette.rockHighlight)
+
+            FilledPath(size: size,
+                       path: main.path)
+                .foregroundColor(config.palette.rock)
+
+            StrokedPath(size: size,
+                        path: water.path,
+                        lineWidth: 3)
+                .foregroundColor(config.palette.waterShoreHighlight)
+        }
+    }
+
+}
+
 struct Rocks: View {
 
     @EnvironmentObject var config: Config
@@ -214,35 +244,65 @@ struct Rocks: View {
     let size: CGSize
 
     var body: some View {
-
         let spec = config.scene.rocks
-
+        
         ZStack {
-
             ForEach(spec) { rock in
-
-                let main = rock.main
-                let reflection = rock.reflection
-                let water = rock.water
-
-                StrokedPath(size: size,
-                            path: main.path,
-                            lineWidth: 3)
-                    .foregroundColor(config.palette.rockHighlight)
+                Rock(size: size, rock: rock)
 
                 FilledPath(size: size,
-                           path: main.path)
-                    .foregroundColor(config.palette.rock)
-
-                FilledPath(size: size,
-                           path: water.path)
-                    .foregroundColor(config.palette.waterShoreHighlight)
-
-                FilledPath(size: size,
-                           path: reflection.path)
+                           path: rock.reflection.path)
                     .foregroundColor(config.palette.waterDark)
 
             }
+        }
+    }
+
+}
+
+struct Island: View {
+
+    @EnvironmentObject var config: Config
+
+    let size: CGSize
+
+    var body: some View {
+
+        let treeColors = [
+            config.palette.tree4,
+            config.palette.tree5,
+            config.palette.tree4,
+            config.palette.tree5,
+
+            // TODO extract darker tree
+        ]
+
+        ZStack {
+            let spec = config.scene.island
+            let main = spec.main
+            let water = spec.water
+            let rock = spec.rock
+            let reflection = spec.reflection
+
+            ForEach(0 ..< spec.trees.count, id: \.self) { treeIndex in
+                let tree = spec.trees[treeIndex]
+                Tree(size: size, spec: tree)
+                    .foregroundColor(treeColors[tree.shade])
+            }
+
+            FilledPath(size: size, path: main.path)
+                .foregroundColor(config.palette.islandGrass)
+
+            FilledPath(size: size, path: reflection.path)
+                .foregroundColor(config.palette.islandReflection)
+
+            StrokedPath(size: size,path: main.path, lineWidth: 3.0)
+                .foregroundColor(config.palette.islandHighlight)
+
+            StrokedPath(size: size, path: water.path, lineWidth: 5.0)
+                .foregroundColor(config.palette.waterHighlight)
+
+            Rock(size: size, rock: rock)
 
         }
 
@@ -274,7 +334,7 @@ public struct AndersceneView: View {
 
                 Rocks(size: g.size)
 
-                // Island
+                Island(size: g.size)
 
                 // Foreground Hill
 
@@ -301,7 +361,7 @@ struct AndersceneView_Previews: PreviewProvider {
 
         let config = Config(
             palette: .default,
-            scene: Anderscene.generate(withSeed: 1))
+            scene: Anderscene.generate(withSeed: 111111111))
 
         AndersceneView()
             .previewDevice(.init(rawValue: device))

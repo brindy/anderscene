@@ -1,6 +1,16 @@
 
 import SwiftUI
 
+struct IslandSpec {
+
+    let main: PathSpec
+    let water: PathSpec
+    let trees: [TreeSpec]
+    let rock: RockSpec
+    let reflection: PathSpec
+
+}
+
 struct RockSpec: Identifiable {
 
     let id = UUID().uuidString

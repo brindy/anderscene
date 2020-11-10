@@ -7,7 +7,7 @@ struct WaterGenerator {
 
     func generate() -> WaterSpec {
 
-        let shoreHighlightOffset: CGFloat = 0.725
+        let shoreHighlightOffset: CGFloat = 0.724
         let mainBodyOffset: CGFloat = shoreHighlightOffset + 0.004
         let mainHighlightOffset: CGFloat = 0.7425
         let mainHighlightHeight: CGFloat = 0.03

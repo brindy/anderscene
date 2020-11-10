@@ -5,9 +5,8 @@ struct RocksGenerator {
 
     let seed: UInt64
 
-    func generateRock(withSeed seed: UInt64, horizontalOffset: CGFloat) -> RockSpec {
+    func generateRock(withSeed seed: UInt64, horizontalOffset: CGFloat, verticalOffset: CGFloat) -> RockSpec {
 
-        let verticalOffset: CGFloat = 0.73
         let cpMod: CGFloat = 0.01
 
         var rng = RNG(seed: seed)
@@ -63,34 +62,22 @@ struct RocksGenerator {
         }
 
         // Create water highlight
-        let waterTopLeft = RelativePoint(x: horizontalOffset - 0.0075, y: verticalOffset - 0.005)
-        let waterTopRight = RelativePoint(x: lastP.x + 0.015, y: verticalOffset - 0.005)
-        let waterBottomRight = RelativePoint(x: lastP.x + 0.01, y: lastP.y + 0.005)
-        let waterBottomLeft = RelativePoint(x: horizontalOffset, y: lastP.y + 0.005)
+        let waterRight = RelativePoint(x: lastP.x + 0.01, y: lastP.y + 0.001)
+        let waterLeft = RelativePoint(x: horizontalOffset - 0.0, y: lastP.y + 0.001)
 
         let waterHighlightPath: [RelativePath] = [
-            .moveTo(point: waterTopLeft),
-            .addLine(point: waterTopLeft.modX(by: 0.01)),
-            .addLine(point: RelativePoint(x: horizontalOffset + 0.01, y: verticalOffset)),
-            .addLine(point: lastP),
-            .addLine(point: waterTopRight),
-            .addLine(point: waterBottomRight),
-            .addLine(point: waterBottomLeft),
+            .moveTo(point: waterLeft),
+            .addLine(point: waterRight),
         ]
 
-        // Create reflection
         maxY = max(0.02, maxY * 0.75)
-        let reflectionTopLeft = RelativePoint(x: horizontalOffset - 0.05, y: verticalOffset + 0.01)
-        let reflectionTopRight = RelativePoint(x: lastP.x + 0.075, y: verticalOffset + 0.01)
-        let reflectionBottomRight = RelativePoint(x: lastP.x + 0.025, y: lastP.y + maxY)
-        let reflectionBottomLeft = RelativePoint(x: horizontalOffset - 0.02, y: lastP.y + maxY)
-
+        let reflectionP1 = RelativePoint(x: horizontalOffset - 0.04, y: lastP.y + 0.003)
+        let reflectionP2 = RelativePoint(x: lastP.x + 0.04, y: lastP.y + 0.003)
         let reflectionPath: [RelativePath] = [
-            .moveTo(point: reflectionTopLeft),
-            .addLine(point: reflectionTopRight),
-            .addLine(point: reflectionBottomRight),
-            .addLine(point: reflectionBottomLeft),
-            .addLine(point: reflectionTopLeft)
+            .moveTo(point: reflectionP1),
+            .addBezierCurve(point: reflectionP2,
+                            cp1: reflectionP1.modY(by: maxY * 1.5),
+                            cp2: reflectionP2.modY(by: maxY * 1.5)),
         ]
 
         return RockSpec(main: PathSpec(path: mainPath),
@@ -104,7 +91,7 @@ struct RocksGenerator {
         var rocks = [RockSpec]()
         while x < 1.2 {
             x += rng.nextCGFloat(0.3 ..< 0.9)
-            rocks.append(generateRock(withSeed: rng.next(), horizontalOffset: x))
+            rocks.append(generateRock(withSeed: rng.next(), horizontalOffset: x, verticalOffset: 0.729))
         }
         return rocks
     }
@@ -121,7 +108,7 @@ struct RocksGenerator_Previews: PreviewProvider {
         GeometryReader { g in
             Rocks(size: g.size)
                 .environmentObject(config)
-                .background(Color.green)
+                .background(Color.red)
         }
 
     }

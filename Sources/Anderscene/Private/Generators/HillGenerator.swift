@@ -28,6 +28,7 @@ struct HillGenerator {
 
             path.append(.addBezierCurve(point: p, cp1: cp1, cp2: cp2))
 
+            // TODO mod the y so the trees don't float
             trees += TreeGenerator(seed: seed).generate(p1: lastP, p2: p, cp1: cp1, cp2: cp2, heightRangeMultiplier: treeHeightRangeMultiplier, maxTrees: Int(distance / minDistance))
 
             x += distance
