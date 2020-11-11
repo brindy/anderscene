@@ -22,8 +22,7 @@ struct ShoreGenerator {
                                        cp1: p1,
                                        cp2: p2,
                                        heightRangeMultiplier: verticalOffset,
-                                       maxTrees: 10,
-                                       yOffset: 0.0)
+                                       yOffset: 0.01)
 
         return ShoreSpec(pathSpec: horizontal, trees: trees)
     }

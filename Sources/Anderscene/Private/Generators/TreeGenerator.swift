@@ -12,20 +12,22 @@ struct TreeGenerator {
                   cp1: RelativePoint,
                   cp2: RelativePoint,
                   heightRangeMultiplier: CGFloat,
-                  maxTrees: Int,
                   yOffset: CGFloat) -> [TreeSpec] {
-
-        guard maxTrees > 0 else { return [] }
 
         let heightRange = Self.treeRange.lowerBound * heightRangeMultiplier ..< Self.treeRange.upperBound * heightRangeMultiplier
 
         var rng = RNG(seed: seed)
         var trees = [TreeSpec]()
 
-        for i in 0 ..< rng.nextInt(0 ..< maxTrees + 1) {
-            let distance = rng.nextCGFloat(0 ..< 1)
-            let p3 = RelativePoint.pointAtDistanceOnBezierCurve(distance: distance, p0: p1, p0hr: cp1, p1: p2, p1hl: cp2)
-            let height = i == 0 ? heightRange.lowerBound : heightRange.upperBound
+        let distance = p1.distance(to: p2)
+        let maxTrees = Int(distance / 0.05)
+        NSLog("*** ".appendingFormat("%f %d", distance, maxTrees))
+
+        var x: CGFloat = 0.0
+        while x < 1.0 && trees.count < maxTrees {
+            x += rng.nextCGFloat(x ..< 1.0)
+            let p3 = RelativePoint.pointAtDistanceOnBezierCurve(distance: x, p0: p1, p0hr: cp1, p1: p2, p1hl: cp2)
+            let height = rng.nextCGFloat(heightRange)
             let shade = rng.nextInt(0 ..< 4)
             let point = RelativePoint(x: p3.x, y: p3.y + yOffset)
             let tree = TreeSpec(point: point, height: height, shade: shade)

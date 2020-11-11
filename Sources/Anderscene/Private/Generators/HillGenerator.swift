@@ -9,6 +9,7 @@ struct HillGenerator {
 
         let minDistance: CGFloat = 0.1
         let maxDistance: CGFloat = 0.5
+        let treeOffset: CGFloat = 0.005
 
         var rng = RNG(seed: seed)
         var path = [RelativePath]()
@@ -28,8 +29,7 @@ struct HillGenerator {
 
             path.append(.addBezierCurve(point: p, cp1: cp1, cp2: cp2))
 
-            // TODO mod the y so the trees don't float
-            trees += TreeGenerator(seed: seed).generate(p1: lastP, p2: p, cp1: cp1, cp2: cp2, heightRangeMultiplier: treeHeightRangeMultiplier, maxTrees: Int(distance / minDistance), yOffset: 0.02)
+            trees += TreeGenerator(seed: seed).generate(p1: lastP, p2: p, cp1: cp1, cp2: cp2, heightRangeMultiplier: treeHeightRangeMultiplier, yOffset: treeOffset)
 
             x += distance
             lastP = p
@@ -44,7 +44,7 @@ struct HillGenerator {
 
             path.append(.addBezierCurve(point: p, cp1: cp1, cp2: cp2))
 
-            trees += TreeGenerator(seed: seed).generate(p1: lastP, p2: p, cp1: cp1, cp2: cp2, heightRangeMultiplier: treeHeightRangeMultiplier, maxTrees: Int(distance / minDistance), yOffset: 0.0)
+            trees += TreeGenerator(seed: seed).generate(p1: lastP, p2: p, cp1: cp1, cp2: cp2, heightRangeMultiplier: treeHeightRangeMultiplier, yOffset: treeOffset)
 
             x += distance
             lastP = p
