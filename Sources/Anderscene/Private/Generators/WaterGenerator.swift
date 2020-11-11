@@ -10,7 +10,7 @@ struct WaterGenerator {
         let shoreHighlightOffset: CGFloat = 0.724
         let mainBodyOffset: CGFloat = shoreHighlightOffset + 0.004
         let mainHighlightOffset: CGFloat = 0.7425
-        let mainHighlightHeight: CGFloat = 0.03
+        let mainHighlightHeight: CGFloat = 0.05
 
         let shoreHighlight: [RelativePath] = [
             .moveTo(point: RelativePoint(x: 0, y: shoreHighlightOffset)),
@@ -51,11 +51,41 @@ struct WaterGenerator {
 
         mainHighlight.append(.addLine(point: RelativePoint(x: x, y: mainHighlightOffset)))
 
-        // MARK: TODO add sparkles
+        let sparkleSize = CGFloat(0.01) ..< CGFloat(0.02)
+
+        var sparkleY: CGFloat = mainBodyOffset
+        var bodySparkles = [SparkleSpec]()
+        for _ in 0 ..< rng.nextInt(5 ..< 20) {
+            let x = rng.nextCGFloat(0 ..< 1)
+            sparkleY = rng.nextCGFloat(sparkleY ..< sparkleY + 0.1)
+
+            let point = RelativePoint(x: x, y: sparkleY)
+            let sparkle = SparkleSpec(point: point,
+                                      size: rng.nextCGFloat(sparkleSize))
+
+            sparkleY += 0.01
+            bodySparkles.append(sparkle)
+        }
+
+        var highlightSparkles = [SparkleSpec]()
+        var sparkleX: CGFloat = 0.0
+        while sparkleX < 1 {
+            sparkleX += rng.nextCGFloat(sparkleX ..< 1)
+            let y = mainHighlightOffset + mainHighlightHeight / 2
+                + rng.nextCGFloat(-0.01 ..< 0.01)
+            let point = RelativePoint(x: sparkleX, y: y)
+            let sparkle = SparkleSpec(point: point,
+                                      size: rng.nextCGFloat(sparkleSize))
+
+            highlightSparkles.append(sparkle)
+            sparkleX += 0.01
+        }
 
         return WaterSpec(shoreHighlight: shoreHighlight,
                          mainBody: mainBody,
-                         mainHighlight: mainHighlight)
+                         mainHighlight: mainHighlight,
+                         bodySparkles: bodySparkles,
+                         highlightSparkles: highlightSparkles)
     }
 
 

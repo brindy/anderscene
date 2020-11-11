@@ -20,11 +20,14 @@ public struct Palette {
         tree2: Color(hex: "aae67a"),
         tree3: Color(hex: "9bd96f"),
         tree4: Color(hex: "6fbf5c"),
-        tree5: Color(hex: "7f8c76"),
+        tree5: Color(hex: "5a9c4b"),
+        tree6: Color(hex: "7f8c76"),
 
         waterShoreHighlight: Color(hex: "dde5ff"),
         waterDark: Color(hex: "bcccff"),
         waterHighlight: Color(hex: "d9e2ff"),
+        waterDarkSparkle: Color(hex: "dde5ff"),
+        waterHighlightSparkle: Color(hex: "ecf0ff"),
 
         rock: Color(hex: "66705f"),
         rockHighlight: Color(hex: "7f8c76"),
@@ -55,11 +58,14 @@ public struct Palette {
     let tree3: Color
     let tree4: Color
     let tree5: Color
+    let tree6: Color
 
     // Water
     let waterShoreHighlight: Color
     let waterDark: Color
     let waterHighlight: Color
+    let waterDarkSparkle: Color
+    let waterHighlightSparkle: Color
 
     // Rocks
     let rock: Color
@@ -154,6 +160,10 @@ struct PaletteView: View {
                         .border(Color.black)
                     Rectangle()
                         .foregroundColor(palette.tree5)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.tree6)
                         .frame(width: 50, height: 50, alignment: .center)
                         .border(Color.black)
                 }

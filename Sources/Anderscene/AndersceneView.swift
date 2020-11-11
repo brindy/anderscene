@@ -184,6 +184,28 @@ struct Shore: View {
     }
 }
 
+struct Sparkle: View {
+
+    @EnvironmentObject var config: Config
+
+    let size: CGSize
+    let spec: SparkleSpec
+
+    var body: some View {
+
+        let left = spec.point.modX(by: -spec.size) • size
+        let right = spec.point.modX(by: spec.size) • size
+
+        Path { p in
+
+            p.move(to: left)
+            p.addLine(to: right)
+
+        }.stroke(style: StrokeStyle(lineWidth: 3, lineCap: .round))
+    }
+
+}
+
 struct Water: View {
 
     @EnvironmentObject var config: Config
@@ -200,8 +222,21 @@ struct Water: View {
                 .foregroundColor(config.palette.waterShoreHighlight)
             FilledPath(size: size, path: spec.mainBody)
                 .foregroundColor(config.palette.waterDark)
+
+            ForEach(0 ..< spec.bodySparkles.count, id: \.self) { index in
+                let spec = spec.bodySparkles[index]
+                Sparkle(size: size, spec: spec)
+                    .foregroundColor(config.palette.waterDarkSparkle)
+            }
+
             FilledPath(size: size, path: spec.mainHighlight)
                 .foregroundColor(config.palette.waterHighlight)
+
+            ForEach(0 ..< spec.highlightSparkles.count, id: \.self) { index in
+                let spec = spec.highlightSparkles[index]
+                Sparkle(size: size, spec: spec)
+                    .foregroundColor(config.palette.waterHighlightSparkle)
+            }
 
         }
     }
@@ -271,8 +306,8 @@ struct Island: View {
         let treeColors = [
             config.palette.tree4,
             config.palette.tree5,
-            config.palette.tree4,
             config.palette.tree5,
+            config.palette.tree6,
 
             // TODO extract darker tree
         ]
@@ -356,17 +391,38 @@ struct AndersceneView_Previews: PreviewProvider {
 
 
     static var previews: some View {
+
         let device = "iPhone SE (2nd generation)"
         // let device = "iPad Pro (12.9-inch) (4th generation)"
 
+        Group {
+
         let config = Config(
             palette: .default,
-            scene: Anderscene.generate(withSeed: 444444444))
+            scene: Anderscene.generate(withSeed: 1))
 
-        AndersceneView()
-            .previewDevice(.init(rawValue: device))
-            .edgesIgnoringSafeArea(.all)
-            .environmentObject(config)
+            AndersceneView()
+                .previewDevice(.init(rawValue: device))
+                .edgesIgnoringSafeArea(.all)
+                .environmentObject(config)
+
+        }
+
+        Group {
+
+            let seed = UInt64(Date().timeIntervalSince1970)
+            let config = Config(palette: .default, scene: Anderscene.generate(withSeed: seed))
+
+            ZStack {
+                AndersceneView()
+                    .previewDevice(.init(rawValue: device))
+                    .edgesIgnoringSafeArea(.all)
+                    .environmentObject(config)
+
+                Text("Seed: \(seed)")
+
+            }
+        }
 
     }
 

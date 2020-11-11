@@ -21,11 +21,20 @@ struct RockSpec: Identifiable {
 
 }
 
+struct SparkleSpec {
+
+    let point: RelativePoint
+    let size: CGFloat
+
+}
+
 struct WaterSpec {
 
     let shoreHighlight: [RelativePath]
     let mainBody: [RelativePath]
     let mainHighlight: [RelativePath]
+    let bodySparkles: [SparkleSpec]
+    let highlightSparkles: [SparkleSpec]
 
 }
 
