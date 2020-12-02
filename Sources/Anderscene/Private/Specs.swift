@@ -8,6 +8,7 @@ struct IslandSpec {
     let trees: [TreeSpec]
     let rock: RockSpec
     let reflection: PathSpec
+    let tufts: [SparkleSpec]
 
 }
 

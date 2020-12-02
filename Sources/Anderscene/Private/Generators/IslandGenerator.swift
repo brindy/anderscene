@@ -54,11 +54,48 @@ struct IslandGenerator {
                                      cp1: treeStart,
                                      cp2: treeEnd, heightRangeMultiplier: 0.9, yOffset: 0.0)
 
+        let tufts =
+            createTufts(p1, p2, p2cp1, p2cp2, &rng, verticalOffset)
+            +
+            createTufts(p2, p3, p3cp1, p3, &rng, verticalOffset)
+
         return IslandSpec(main: PathSpec(path: mainPath),
                           water: PathSpec(path: waterPath),
                           trees: trees,
                           rock: rockSpec,
-                          reflection: PathSpec(path: reflectionPath))
+                          reflection: PathSpec(path: reflectionPath),
+                          tufts: tufts)
+    }
+
+    func createTufts(_ p1: RelativePoint,
+                     _ p2: RelativePoint,
+                     _ cp1: RelativePoint,
+                     _ cp2: RelativePoint,
+                     _ rng: inout RNG,
+                     _ verticalOffset: CGFloat) -> [SparkleSpec] {
+
+
+        let maxTufts = abs(Int((p1.x - p2.x) / 0.03))
+        NSLog("maxTufts %d", maxTufts)
+
+        var distance: CGFloat = rng.nextCGFloat(0 ..< 1)
+        var tufts = [SparkleSpec]()
+        while distance < 1.0 {
+            NSLog("distance %f %d", distance, maxTufts)
+
+            let px = RelativePoint.atDistanceOnBezierCurve(distance: distance, p0: p1, p0hr: cp1, p1: p2, p1hl: cp2)
+
+            NSLog("%f %f", verticalOffset, px.y)
+
+            let y: CGFloat = rng.nextCGFloat(px.y ..< verticalOffset)
+            let p = RelativePoint(x: px.x, y: y)
+
+            tufts.append(SparkleSpec(point: p, size: rng.nextCGFloat(0.002 ..< 0.003)))
+
+            distance += rng.nextCGFloat(0.1 ..< 0.2)
+        }
+
+        return tufts
     }
 
 }
@@ -67,7 +104,7 @@ struct IslandGenerator_Previews: PreviewProvider {
     static var previews: some View {
 
         let palette = Palette.default
-        let scene = Anderscene.generate(withSeed: 12)
+        let scene = Anderscene.generate(withSeed: 1111111111)
         let config = Config(palette: palette, scene: scene)
 
         GeometryReader { g in

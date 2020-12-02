@@ -335,6 +335,13 @@ struct Island: View {
             FilledPath(size: size, path: reflection.path)
                 .foregroundColor(config.palette.islandReflection)
 
+            ForEach(0 ..< spec.tufts.count, id: \.self) { index in
+                let spec = spec.tufts[index]
+                Sparkle(size: size, spec: spec)
+                    .foregroundColor(config.palette.islandHighlight)
+                    
+            }
+
             StrokedPath(size: size,path: main.path, lineWidth: 3.0)
                 .foregroundColor(config.palette.islandHighlight)
 
@@ -405,7 +412,7 @@ struct AndersceneView_Previews: PreviewProvider {
 
         let config = Config(
             palette: .dark,
-            scene: Anderscene.generate(withSeed: 111111))
+            scene: Anderscene.generate(withSeed: 11))
 
             AndersceneView()
                 .previewDevice(.init(rawValue: phone))
@@ -417,7 +424,7 @@ struct AndersceneView_Previews: PreviewProvider {
         Group {
 
             let seed = UInt64(Date().timeIntervalSince1970)
-            let config = Config(palette: .default, scene: Anderscene.generate(withSeed: 1606924485))
+            let config = Config(palette: .default, scene: Anderscene.generate(withSeed: seed))
 
             ZStack {
                 AndersceneView()
