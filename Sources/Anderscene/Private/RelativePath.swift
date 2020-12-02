@@ -68,7 +68,7 @@ struct RelativePoint {
     }
 
     // Based on https://b3d.interplanety.org/en/creating-points-on-a-bezier-curve/
-    static func pointAtDistanceOnBezierCurve(distance t: CGFloat,
+    static func atDistanceOnBezierCurve(distance t: CGFloat,
                                             p0: RelativePoint,
                                             p0hr: RelativePoint,
                                             p1: RelativePoint,

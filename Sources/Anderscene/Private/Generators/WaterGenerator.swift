@@ -55,9 +55,11 @@ struct WaterGenerator {
 
         var sparkleY: CGFloat = mainBodyOffset
         var bodySparkles = [SparkleSpec]()
-        for _ in 0 ..< rng.nextInt(5 ..< 20) {
+
+        let maxSparkles = rng.nextInt(10 ..< 30)
+        for _ in 0 ..< maxSparkles {
             let x = rng.nextCGFloat(0 ..< 1)
-            sparkleY = rng.nextCGFloat(sparkleY ..< sparkleY + 0.1)
+            sparkleY = rng.nextCGFloat(sparkleY ..< sparkleY + 0.01)
 
             let point = RelativePoint(x: x, y: sparkleY)
             let sparkle = SparkleSpec(point: point,
@@ -68,17 +70,18 @@ struct WaterGenerator {
         }
 
         var highlightSparkles = [SparkleSpec]()
-        var sparkleX: CGFloat = 0.0
-        while sparkleX < 1 {
-            sparkleX += rng.nextCGFloat(sparkleX ..< 1)
-            let y = mainHighlightOffset + mainHighlightHeight / 2
-                + rng.nextCGFloat(-0.01 ..< 0.01)
-            let point = RelativePoint(x: sparkleX, y: y)
+        let maxHighlightSparkles = rng.nextInt(3 ..< 10)
+        for _ in 0 ..< maxHighlightSparkles {
+            let x = rng.nextCGFloat(0 ..< 1)
+
+            let y = (mainHighlightOffset + mainHighlightHeight / 2)
+                + rng.nextCGFloat(-0.02 ..< 0.02)
+
+            let point = RelativePoint(x: x, y: y)
             let sparkle = SparkleSpec(point: point,
                                       size: rng.nextCGFloat(sparkleSize))
 
             highlightSparkles.append(sparkle)
-            sparkleX += 0.01
         }
 
         return WaterSpec(shoreHighlight: shoreHighlight,
@@ -89,4 +92,19 @@ struct WaterGenerator {
     }
 
 
+}
+
+struct WaterGenerator_Previews: PreviewProvider {
+    static var previews: some View {
+
+        let palette = Palette.default
+        let scene = Anderscene.generate(withSeed: 1)
+        let config = Config(palette: palette, scene: scene)
+
+        GeometryReader { g in
+            Water(size: g.size)
+                .environmentObject(config)
+        }
+
+    }
 }

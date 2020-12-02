@@ -50,12 +50,13 @@ struct Tree: View {
 
     let size: CGSize
     let spec: TreeSpec
+    let index: Int
 
     var body: some View {
 
         let position = spec.point • size
-        let width: CGFloat = 100 * spec.height
-        let height: CGFloat = spec.height * max(size.width, size.height)
+        let height: CGFloat = spec.height * size.height
+        let width = height / 5
         let left = CGPoint(x: position.x - width, y: position.y)
         let right = CGPoint(x: position.x + width, y: position.y)
         let top = CGPoint(x: position.x, y: position.y - height)
@@ -71,6 +72,9 @@ struct Tree: View {
 
             }
 
+//            Text("\(index)")
+//                .position(top)
+//                .foregroundColor(.red)
         }
     }
 
@@ -104,9 +108,9 @@ struct Hills: View {
 
                 ForEach(0 ..< hill.trees.count, id: \.self) { treeIndex in
                     let tree = hill.trees[treeIndex]
-                    Tree(size: size, spec: tree)
+                    Tree(size: size, spec: tree, index: treeIndex)
                         .foregroundColor(treeColors[tree.shade + index])
-                        .foregroundColor(.red)
+
                 }
 
                 FilledPath(size: size, path: path)
@@ -172,7 +176,7 @@ struct Shore: View {
 
             ForEach(0 ..< spec.trees.count, id: \.self) { treeIndex in
                 let tree = spec.trees[treeIndex]
-                Tree(size: size, spec: tree)
+                Tree(size: size, spec: tree, index: treeIndex)
                     .foregroundColor(treeColors[tree.shade])
             }
 
@@ -321,7 +325,7 @@ struct Island: View {
 
             ForEach(0 ..< spec.trees.count, id: \.self) { treeIndex in
                 let tree = spec.trees[treeIndex]
-                Tree(size: size, spec: tree)
+                Tree(size: size, spec: tree, index: treeIndex)
                     .foregroundColor(treeColors[tree.shade])
             }
 
@@ -401,7 +405,7 @@ struct AndersceneView_Previews: PreviewProvider {
 
         let config = Config(
             palette: .default,
-            scene: Anderscene.generate(withSeed: 1))
+            scene: Anderscene.generate(withSeed: 111111))
 
             AndersceneView()
                 .previewDevice(.init(rawValue: phone))
@@ -413,7 +417,7 @@ struct AndersceneView_Previews: PreviewProvider {
         Group {
 
             let seed = UInt64(Date().timeIntervalSince1970)
-            let config = Config(palette: .default, scene: Anderscene.generate(withSeed: seed))
+            let config = Config(palette: .default, scene: Anderscene.generate(withSeed: 1606924485))
 
             ZStack {
                 AndersceneView()
