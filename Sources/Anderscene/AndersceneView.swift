@@ -404,7 +404,7 @@ struct AndersceneView_Previews: PreviewProvider {
         Group {
 
         let config = Config(
-            palette: .default,
+            palette: .dark,
             scene: Anderscene.generate(withSeed: 111111))
 
             AndersceneView()
