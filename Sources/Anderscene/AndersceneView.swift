@@ -10,19 +10,19 @@ struct SkyBall: View {
     var body: some View {
 
         let spec = config.scene.skyBall
-        let size = self.size.width * spec.size
+        let radius = min(size.width, size.height) * spec.size
 
         ZStack {
             Circle()
                 .foregroundColor(config.palette.skyBallHalo)
-                .frame(width: size,
-                       height: size,
+                .frame(width: radius,
+                       height: radius,
                        alignment: .center)
 
             Circle()
                 .foregroundColor(config.palette.skyBallForeground)
-                .frame(width: size * 0.8,
-                       height: size * 0.8,
+                .frame(width: radius * 0.8,
+                       height: radius * 0.8,
                        alignment: .center)
 
         }.position(spec.point • self.size)
@@ -54,8 +54,8 @@ struct Tree: View {
     var body: some View {
 
         let position = spec.point • size
-        let width = size.width * (spec.height / 2.5)
-        let height = size.height * spec.height
+        let width: CGFloat = 100 * spec.height
+        let height: CGFloat = spec.height * max(size.width, size.height)
         let left = CGPoint(x: position.x - width, y: position.y)
         let right = CGPoint(x: position.x + width, y: position.y)
         let top = CGPoint(x: position.x, y: position.y - height)
@@ -394,8 +394,8 @@ struct AndersceneView_Previews: PreviewProvider {
 
     static var previews: some View {
 
-        let device = "iPhone SE (2nd generation)"
-        // let device = "iPad Pro (12.9-inch) (4th generation)"
+        let phone = "iPhone SE (2nd generation)"
+        let pad = "iPad Pro (12.9-inch) (4th generation)"
 
         Group {
 
@@ -404,7 +404,7 @@ struct AndersceneView_Previews: PreviewProvider {
             scene: Anderscene.generate(withSeed: 1))
 
             AndersceneView()
-                .previewDevice(.init(rawValue: device))
+                .previewDevice(.init(rawValue: phone))
                 .edgesIgnoringSafeArea(.all)
                 .environmentObject(config)
 
@@ -417,7 +417,7 @@ struct AndersceneView_Previews: PreviewProvider {
 
             ZStack {
                 AndersceneView()
-                    .previewDevice(.init(rawValue: device))
+                    .previewDevice(.init(rawValue: pad))
                     .edgesIgnoringSafeArea(.all)
                     .environmentObject(config)
 
