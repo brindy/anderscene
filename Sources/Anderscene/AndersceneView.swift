@@ -349,6 +349,8 @@ public struct AndersceneView: View {
 
     @EnvironmentObject var config: Config
 
+    public init() { }
+
     public var body: some View {
         GeometryReader { g in
             ZStack {
