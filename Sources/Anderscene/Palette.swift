@@ -7,7 +7,9 @@ public struct Palette {
         skyBallForeground: Color(hex: "ffffff"),
         skyBallHalo: Color(hex: "ecf0ff"),
 
-        sky: Color(hex: "d9e2ff"),
+        skyTop: Color(hex: "8298ff"),
+        skyMiddle: Color(hex: "d9e2ff"),
+        skyBottom: Color(hex: "d9e2ff"),
         haze: Color(hex: "ecf0ff"),
         clouds: Color(hex: "ecf0ff"),
 
@@ -41,7 +43,9 @@ public struct Palette {
         skyBallForeground: Color(hex: "99e4ff"),
         skyBallHalo: Color(hex: "99e4ff").opacity(0.3),
 
-        sky: Color(hex: "1f5da2"),
+        skyTop: Color(hex: "1f5da2"),
+        skyMiddle: Color(hex: "1f5da2"),
+        skyBottom: Color(hex: "1f5da2"),
         haze: Color(hex: "209fee"),
         clouds: Color(hex: "35a9e8"),
 
@@ -76,7 +80,9 @@ public struct Palette {
     public let skyBallHalo: Color
 
     // Sky
-    public let sky: Color
+    public let skyTop: Color
+    public let skyMiddle: Color
+    public let skyBottom: Color
     public let haze: Color
     public let clouds: Color
 
@@ -137,7 +143,15 @@ struct PaletteView: View {
                 Text("Sky")
                 HStack {
                     Rectangle()
-                        .foregroundColor(palette.sky)
+                        .foregroundColor(palette.skyTop)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.skyMiddle)
+                        .frame(width: 50, height: 50, alignment: .center)
+                        .border(Color.black)
+                    Rectangle()
+                        .foregroundColor(palette.skyBottom)
                         .frame(width: 50, height: 50, alignment: .center)
                         .border(Color.black)
                     Rectangle()
@@ -272,8 +286,8 @@ struct Palette_Previews: PreviewProvider {
     static var previews: some View {
 
         let config = Config(
-            palette: .dark,
-            scene: Anderscene.generate(withSeed: 111111))
+            palette: .default,
+            scene: Anderscene.generate(withSeed: 1))
 
         AndersceneView()
             .previewLayout(.fixed(width: 300, height: 600))

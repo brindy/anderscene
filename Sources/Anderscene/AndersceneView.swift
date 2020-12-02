@@ -363,6 +363,14 @@ public struct AndersceneView: View {
     public init() { }
 
     public var body: some View {
+
+        let gradient = Gradient(
+            stops: [ .init(color: config.palette.skyTop, location: 0),
+                     .init(color: config.palette.skyMiddle, location: config.scene.skyBall.point.y),
+                     .init(color: config.palette.skyBottom, location: 0.5)
+            ]
+        )
+
         GeometryReader { g in
             ZStack {
 
@@ -394,7 +402,8 @@ public struct AndersceneView: View {
 
             }
         }
-        .background(config.palette.sky)
+        // .background(config.palette.sky)
+        .background(LinearGradient(gradient: gradient, startPoint: .top, endPoint: .bottom))
 
     }
     
@@ -411,8 +420,8 @@ struct AndersceneView_Previews: PreviewProvider {
         Group {
 
         let config = Config(
-            palette: .dark,
-            scene: Anderscene.generate(withSeed: 11))
+            palette: .default,
+            scene: Anderscene.generate(withSeed: 111))
 
             AndersceneView()
                 .previewDevice(.init(rawValue: phone))
