@@ -3,7 +3,7 @@ import SwiftUI
 
 public struct Palette {
 
-    static let `default` = Palette(
+    public static let `default` = Palette(
         skyBallForeground: Color(hex: "ffffff"),
         skyBallHalo: Color(hex: "ecf0ff"),
 

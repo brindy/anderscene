@@ -2,11 +2,11 @@
 import Swift
 import SwiftUI
 
-struct Anderscene {
+public struct Anderscene {
     
     /// When adding new elements they must be added after the existing ones so that the
     ///  rng remains consistent for a given seed.
-    static func generate(withSeed seed: UInt64) -> Anderscene {
+    public static func generate(withSeed seed: UInt64) -> Anderscene {
         var rng = RNG(seed: seed)
 
         let skyBall = SkyBallGenerator(seed: rng.next()).generatte()
